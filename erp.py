@@ -1,11 +1,10 @@
 import os
+import json
 
 folder = os.path.join(os.path.dirname(__file__), "files")
 
-destinations = {
-    "桃美": "桃美",
-    "桃美連通橋": "桃美連通橋",
-}
+with open("destinations.json", "r", encoding="utf-8") as file:
+    destinations = json.load(file)
 
 def identify_file(filename):
     for name in sorted(destinations, key=len, reverse=True):
