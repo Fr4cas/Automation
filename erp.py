@@ -22,9 +22,14 @@ for filename in os.listdir(folder):
     print(f" {destination}")
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=False)
-    page = browser.new_page()
+    browser = p.chromium.connect_over_cdp("http://localhost:9222")
 
-    page.goto("https://erp.formosa94.com.tw/Cogoces4/Main/fwMdiMain.htm")
+    context = browser.contexts[0]
+    pages = context.pages
+
+    for page in pages:
+        print(page.title())
+        print(page.url)
+
     input("Press Enter to exit...")
     browser.close()
