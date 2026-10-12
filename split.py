@@ -27,9 +27,11 @@ for filename in os.listdir(folder):
             doc = pymupdf.open(file_path)
             page = doc[0]
 
+            # Convert the PDF page into an image
             pix = page.get_pixmap(dpi=300)
             image = pix.pil_image()
 
+            # Recognize Traditional Chinese and English
             text = pytesseract.image_to_string(
                 image,
                 lang="chi_tra+eng"
@@ -38,4 +40,4 @@ for filename in os.listdir(folder):
             doc.close()
 
         print("First page text:")
-        print(text[:1000] if text else "No text found")
+        print(text if text and text.strip() else "No text found")
