@@ -12,22 +12,24 @@ for filename in os.listdir(folder):
     if filename.lower().endswith(".pdf"):
         file_path = os.path.join(folder, filename)
 
-        print(filename)
-
         doc = pymupdf.open(file_path)
-        page = doc[0]
 
-        # Convert the PDF page into an image
-        pix = page.get_pixmap(dpi=300)
-        image = pix.pil_image()
+        print(f"\n{'=' * 60}")
+        print(f"File: {filename}")
+        print(f"Number of pages: {len(doc)}")
 
-        # Recognize Traditional Chinese and English
-        text = pytesseract.image_to_string(
-            image,
-            lang="chi_tra+eng"
-        )
+        for page_number, page in enumerate(doc, start=1):
+            # Convert the PDF page into an image
+            pix = page.get_pixmap(dpi=300)
+            image = pix.pil_image()
+
+            # Recognize Traditional Chinese and English
+            text = pytesseract.image_to_string(
+                image,
+                lang="chi_tra+eng"
+            )
+
+            print(f"\n--- Page {page_number} ---")
+            print(text if text.strip() else "No text found")
 
         doc.close()
-
-        print("First page text:")
-        print(text if text and text.strip() else "No text found")
