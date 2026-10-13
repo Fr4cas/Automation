@@ -1,5 +1,4 @@
 import os
-from pypdf import PdfReader
 import pymupdf
 import pytesseract
 
@@ -13,31 +12,22 @@ for filename in os.listdir(folder):
     if filename.lower().endswith(".pdf"):
         file_path = os.path.join(folder, filename)
 
-        reader = PdfReader(file_path)
-
         print(filename)
-        print(f"  Number of pages: {len(reader.pages)}")
 
-        first_page = reader.pages[0]
-        text = first_page.extract_text()
+        doc = pymupdf.open(file_path)
+        page = doc[0]
 
-        if not text or not text.strip():
-            print("  No text found. Attempting OCR...")
+        # Convert the PDF page into an image
+        pix = page.get_pixmap(dpi=300)
+        image = pix.pil_image()
 
-            doc = pymupdf.open(file_path)
-            page = doc[0]
+        # Recognize Traditional Chinese and English
+        text = pytesseract.image_to_string(
+            image,
+            lang="chi_tra+eng"
+        )
 
-            # Convert the PDF page into an image
-            pix = page.get_pixmap(dpi=300)
-            image = pix.pil_image()
-
-            # Recognize Traditional Chinese and English
-            text = pytesseract.image_to_string(
-                image,
-                lang="chi_tra+eng"
-            )
-
-            doc.close()
+        doc.close()
 
         print("First page text:")
         print(text if text and text.strip() else "No text found")
