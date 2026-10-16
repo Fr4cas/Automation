@@ -32,13 +32,32 @@ def extract_page_number(text):
 def extract_document_number(text):
     # Look for a document number near the top of the page.
     # This pattern matches numbers like 2300A-260101-001.
+
+    # Noralize common OCR hyphen subs
+    normalized = text
+    for char in ("~", "～", "—", "－", "﹣", "="):
+        normalized = normalized.replace(char, "-")
+
+    # Remove spaces between digits inserted by OCR.
+    normalized = re.sub(
+        r"(?<=\d)\s+(?=\d)",
+        "",
+        normalized
+    )
+
     match = re.search(
-        r"\b[A-Z0-9]+-\d{6}-\d+\b",
-        text[:1000],
+        r"\b([A-Z0-9]{4,})\s*-\s*(\d{6})\s*-\s*(\d{3})\b",
+        normalized,
         re.IGNORECASE
     )
 
-    return match.group(0) if match else None
+    if match:
+        return (
+            f"{match.group(1).upper()}-"
+            f"{match.group(2)}-{match.group(3)}"
+        )
+
+    return None
 
 for filename in os.listdir(folder):
     if filename.lower().endswith(".pdf"):
@@ -66,7 +85,28 @@ for filename in os.listdir(folder):
             #print(f"\n--- Page {page_number} ---")
 
             page_info = extract_page_number(text)
-            document_number = extract_document_number(text)
+
+            # Scan the top of the page for document number
+            width, height = image.size
+
+            top = image.crop((0, 0, width, int(height * 0.10)))
+
+            #enlarge the top image to improve OCR accuracy
+            top = top.resize((top.width * 2, top.height * 2))
+
+            top_text = pytesseract.image_to_string(
+                top,
+                lang="chi_tra+eng",
+                config="--psm 6"
+            )
+
+            document_number = extract_document_number(top_text)
+
+            # Fall back to the original full page OCR text.
+            if document_number is None:
+                print(f"\nDEBUG: {filename}, PDF page {page_number}")
+                print("Top-region OCR:")
+                print(repr(top_text))
 
             record = {
                 "page_number": page_number,
@@ -94,6 +134,3 @@ for filename in os.listdir(folder):
                 f"Document number: "
                 f"{record['document_number'] or 'Not found'}"
             )
-
-
-     
