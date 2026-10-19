@@ -60,45 +60,111 @@ def extract_document_number(text):
     return None
 
 def group_documents(page_records):
-    documents = []
-    current_document = []
-    expected_page_numbers = None
+    candidates = []
+    page_count = len(page_records)
 
-    for record in page_records:
+    # Use every part of X of N to estimate
+    for index, record in enumerate(page_records):
         page_info = record["page_info"]
-        document_number = record["document_number"]
 
-        # A detected document number suggests a new document.
-        start_new_document = (
-            document_number is not None 
-            and len(current_document) > 0
-        )
+        if not page_info:
+            continue
+        
+        current_page, total_pages = page_info
+        start = index - (current_page - 1)
+        end = start + total_pages
+
+        if start < 0 or end > page_count:
+            continue
+
+        # Check if other pages have conflicting page info
+        valid = True
+        marker_count = 0
+
+        for position in range(start, end):
+            other_info = page_records[position]["page_info"]
+
+            if other_info:
+                expected_position = position - start + 1
+
+                if other_info != (expected_position, total_pages):
+                    valid = False
+                    break
+                
+                marker_count += 1
+            
+            # If a document number is detected in the sequence
+            # Suggest a new file has started, so this sequence is invalid.
+            if (
+                position > start
+                and page_records[position]["document_number"]
+            ):
+                valid = False
+                break
+
+        if not valid:
+            continue
+
+        # Keep proposed range only once
+        candidate = {
+            "start": start,
+            "end": end,
+            "marker_count": marker_count,
+            "has_start_marker": page_records[start]["page_info"]
+                == (1, total_pages),
+            "has_document_number": bool(
+                page_records[start]["document_number"]
+            ),
+        }
+
+        if not any(
+            existing["start"] == start
+            and existing["end"] == end
+            for existing in candidates
+        ):
+            candidates.append(candidate)
+
+    # Prefer ranges with more detected markers
+    candidates.sort(    
+        key=lambda item: (
+            item["marker_count"],
+            item["has_start_marker"],
+            item["has_document_number"]
+        ),
+        reverse=True
+    )
+
+    groups = []
+    assigned_pages = set()
+
+    for candidate in candidates:
+        start = candidate["start"]
+        end = candidate["end"]
+        page_indexes = set(range(start, end))
+
+        # Do not allow overlapping groups (claiming the same page)
+        if assigned_pages.intersection(page_indexes):
+            continue
+
+        assigned_pages.update(page_indexes)
+
+        groups.append({
+            "pages": page_records[start:end],
+            "status": "sequence match",
+        })
     
-        # A page of 1 of N should be considered the start of a new document
-        if page_info and page_info[0] == 1 and current_document:
-            start_new_document = True
+    # Keep remaining pages for manual review
+    for index, record in enumerate(page_records):
+        if index not in assigned_pages:
+            groups.append({
+                "pages": [record],
+                "status": "unresolved",
+            })
 
-        if start_new_document:
-            documents.append(current_document)
-            current_document = []
-            expected_page_numbers = None
+    # Return groups in PDF page order
+    groups.sort(key=lambda group: group["pages"][0]["page_number"])
 
-        current_document.append(record)
-
-        # Record the expected batch length
-        if page_info and page_info[0] == 1:
-            expected_page_numbers = page_info[1]
-
-        if expected_page_numbers is not None and len(current_document) == expected_page_numbers:
-            documents.append(current_document)
-            current_document = []
-            expected_page_numbers = None
-
-    # Keep remaining pages as a final group
-    if current_document:
-        documents.append(current_document)
-
-    return documents
+    return groups
 
 for filename in os.listdir(folder):
     if filename.lower().endswith(".pdf"):
@@ -123,7 +189,7 @@ for filename in os.listdir(folder):
                 lang="chi_tra+eng"
             )
 
-            #print(f"\n--- Page {page_number} ---")
+            print(f"\n--- Scanning page: {page_number} ---")
 
             page_info = extract_page_number(text)
 
@@ -144,10 +210,10 @@ for filename in os.listdir(folder):
             document_number = extract_document_number(top_text)
 
             # Log debug information if document number is not found.
-            if document_number is None:
-                print(f"\nDEBUG: {filename}, PDF page {page_number}")
-                print("Top-region OCR:")
-                print(repr(top_text))
+            #if document_number is None:
+                #print(f"\nDEBUG: {filename}, PDF page {page_number}")
+                #print("Top-region OCR:")
+                #print(repr(top_text))
 
             record = {
                 "page_number": page_number,
@@ -176,15 +242,22 @@ for filename in os.listdir(folder):
                 f"{record['document_number'] or 'Not found'}"
             )
 
-            documents = group_documents(page_records)
+        documents = group_documents(page_records)
 
         print(f"\nProposed document groups for {filename}:")
 
-        for index, pages in enumerate(documents, start=1):
+        for index, group in enumerate(documents, start=1):
+            pages = group["pages"]
             start_page = pages[0]["page_number"]
             end_page = pages[-1]["page_number"]
 
+            page_range = (
+                str(start_page)
+                if start_page == end_page
+                else f"{start_page}-{end_page}"
+            )
+
             print(
-                f"Document {index}: "
-                f"PDF pages {start_page}-{end_page}"
+                f"Document {index}: PDF pages {page_range} "
+                f"[{group['status']}]"
             )
