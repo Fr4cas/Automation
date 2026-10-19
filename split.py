@@ -59,6 +59,47 @@ def extract_document_number(text):
 
     return None
 
+def group_documents(page_records):
+    documents = []
+    current_document = []
+    expected_page_numbers = None
+
+    for record in page_records:
+        page_info = record["page_info"]
+        document_number = record["document_number"]
+
+        # A detected document number suggests a new document.
+        start_new_document = (
+            document_number is not None 
+            and len(current_document) > 0
+        )
+    
+        # A page of 1 of N should be considered the start of a new document
+        if page_info and page_info[0] == 1 and current_document:
+            start_new_document = True
+
+        if start_new_document:
+            documents.append(current_document)
+            current_document = []
+            expected_page_numbers = None
+
+        current_document.append(record)
+
+        # Record the expected batch length
+        if page_info and page_info[0] == 1:
+            expected_page_numbers = page_info[1]
+
+        if expected_page_numbers is not None and len(current_document) == expected_page_numbers:
+            documents.append(current_document)
+            current_document = []
+            expected_page_numbers = None
+
+    # Keep remaining pages as a final group
+    if current_document:
+        documents.append(current_document)
+
+    return documents
+
 for filename in os.listdir(folder):
     if filename.lower().endswith(".pdf"):
         file_path = os.path.join(folder, filename)
@@ -102,7 +143,7 @@ for filename in os.listdir(folder):
 
             document_number = extract_document_number(top_text)
 
-            # Fall back to the original full page OCR text.
+            # Log debug information if document number is not found.
             if document_number is None:
                 print(f"\nDEBUG: {filename}, PDF page {page_number}")
                 print("Top-region OCR:")
@@ -133,4 +174,17 @@ for filename in os.listdir(folder):
                 f"Document page {page_label}; "
                 f"Document number: "
                 f"{record['document_number'] or 'Not found'}"
+            )
+
+            documents = group_documents(page_records)
+
+        print(f"\nProposed document groups for {filename}:")
+
+        for index, pages in enumerate(documents, start=1):
+            start_page = pages[0]["page_number"]
+            end_page = pages[-1]["page_number"]
+
+            print(
+                f"Document {index}: "
+                f"PDF pages {start_page}-{end_page}"
             )
