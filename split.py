@@ -166,6 +166,49 @@ def group_documents(page_records):
 
     return groups
 
+def split_documents(source_path, documents, output_folder):
+    os.makedirs(output_folder, exist_ok=True)
+
+    source_name = os.path.splitext(
+        os.path.basename(source_path)
+    )[0]
+
+    source_doc = pymupdf.open(source_path)
+
+    try:
+        for index, group in enumerate(documents, start = 1):
+            pages = group["pages"]
+            status = group["status"]
+
+            start_page = pages[0]["page_number"]
+            end_page = pages[-1]["page_number"]
+
+            output_name = (
+                f"{source_name}_document_{index:03d}_"
+                f"pages_{start_page}-{end_page}.pdf"
+            )
+
+            output_path = os.path.join(output_folder, output_name)
+
+            new_doc = pymupdf.open()
+
+            try:
+                new_doc.insert_pdf(
+                    source_doc,
+                    from_page = start_page - 1,
+                    to_page = end_page - 1
+                )
+                new_doc.save(output_path)
+            finally:
+                new_doc.close()
+
+            print(
+                f"Created: {output_name} "
+                f"[{status}]"
+            )
+    finally:
+        source_doc.close()
+
 for filename in os.listdir(folder):
     if filename.lower().endswith(".pdf"):
         file_path = os.path.join(folder, filename)
@@ -243,6 +286,15 @@ for filename in os.listdir(folder):
             )
 
         documents = group_documents(page_records)
+
+        # Output the split documents
+        output_folder = os.path.join(
+            os.path.dirname(__file__),
+            "split_pdfs",
+            os.path.splitext(filename)[0]
+        )
+
+        split_documents(file_path, documents, output_folder)
 
         print(f"\nProposed document groups for {filename}:")
 
