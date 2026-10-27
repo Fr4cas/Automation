@@ -70,6 +70,7 @@ def extract_document_number(text):
         normalized
     )
 
+    # First, try the standard document number format.
     match = re.search(
         r"\b([A-Z0-9]{4,})\s*-\s*(\d{6})\s*-\s*(\d{3})\b",
         normalized,
@@ -80,6 +81,20 @@ def extract_document_number(text):
         return (
             f"{match.group(1).upper()}-"
             f"{match.group(2)}-{match.group(3)}"
+        )
+
+    # Fallback: allow OCR to miss either or both hyphens.
+    match = re.search(
+        r"\b([A-Z0-9]{4,})\s*-?\s*(\d{9})\b",
+        normalized,
+        re.IGNORECASE
+)
+
+    if match:
+        digits = match.group(2)
+        return (
+            f"{match.group(1).upper()}-"
+            f"{digits[:6]}-{digits[6:]}"
         )
 
     return None
