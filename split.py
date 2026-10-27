@@ -258,14 +258,17 @@ for filename in os.listdir(folder):
             bottom = image.crop((0, int(height * 0.95), width, height))
 
             start = time.perf_counter()
-            
-            # Recognize the document number from the top region
-            top_text = recognize_text(top)
-            document_number = extract_document_number(top_text)
 
             # Recognize page numbering from the bottom region
             bottom_text = recognize_text(bottom)
             page_info = extract_page_number(bottom_text)
+
+            # Recognize the document number from the top region
+            if page_info and page_info[0] > 1:
+                document_number = None
+            else:
+                top_text = recognize_text(top)
+                document_number = extract_document_number(top_text)
 
             # Save the raw OCR results for debugging.
             with open(debug_log_path, "a", encoding="utf-8") as debug_file:
