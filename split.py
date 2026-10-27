@@ -237,12 +237,7 @@ def split_documents(source_path, documents, output_folder):
 for filename in os.listdir(folder):
     if filename.lower().endswith(".pdf"):
         file_path = os.path.join(folder, filename)
-
         doc = pymupdf.open(file_path)
-
-        #print(f"\n{'=' * 60}")
-        #print(f"File: {filename}")
-        #print(f"Number of pages: {len(doc)}")
 
         page_records = []
 
@@ -264,6 +259,7 @@ for filename in os.listdir(folder):
             page_info = extract_page_number(bottom_text)
 
             # Recognize the document number from the top region
+            top_text = None
             if page_info and page_info[0] > 1:
                 document_number = None
             else:
@@ -294,10 +290,6 @@ for filename in os.listdir(folder):
 
             print(f"\n--- Scanning page: {page_number} ---")
 
-            # Log debug information if document number is not found.
-            #if document_number is None:
-                #print(f"\nDEBUG: {filename}, PDF page {page_number}")
-
             record = {
                 "page_number": page_number,
                 "text": "",
@@ -318,11 +310,17 @@ for filename in os.listdir(folder):
             else:
                 page_label = "Not found"
 
+            if record["page_info"] and record["page_info"][0] > 1:
+                document_number_label = "Skipped"
+            elif record["document_number"]:
+                document_number_label = record["document_number"]
+            else:
+                document_number_label = "Not found"
+
             print(
                 f"PDF page {record['page_number']}: "
                 f"Document page {page_label}; "
-                f"Document number: "
-                f"{record['document_number'] or 'Not found'}"
+                f"Document number: {document_number_label}"
             )
 
         documents = group_documents(page_records)
