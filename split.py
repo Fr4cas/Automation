@@ -1,10 +1,20 @@
 import os
 import re
+import time
 import pymupdf
 import numpy as np
 from paddleocr import PaddleOCR
 
 folder = os.path.join(os.path.dirname(__file__), "pdfs")
+
+debug_log_path = os.path.join(
+    os.path.dirname(__file__),
+    "ocr_debug_results.txt"
+)
+
+# Clear the previous debug log at the start of each run.
+with open(debug_log_path, "w", encoding="utf-8") as debug_file:
+    debug_file.write("PaddleOCR cropped-region debug log\n\n")
 
 ocr = PaddleOCR(
     use_doc_orientation_classify=False,
@@ -28,9 +38,9 @@ def extract_page_number(text):
     # Match page numbering such as 第1頁，共2頁.
     # Allow common OCR misreadings of 頁:
     # 員, 負, and 貝.
-    page_char = r"[頁員負貝]"
+    page_char = r"[頁員負貝页]"
 
-    match = re.search(rf"第\s*(\d+)\s*{page_char}\s*[，,、]\s*共\s*(\d+)\s*{page_char}",
+    match = re.search(rf"第\s*(\d+)\s*{page_char}\s*[，,、,·]\s*共\s*(\d+)\s*{page_char}",
      text)
     
     if match:
@@ -241,13 +251,45 @@ for filename in os.listdir(folder):
             pix = page.get_pixmap()
             image = pix.pil_image()
 
-            # Recognize Traditional Chinese and English
-            text = recognize_text(image)
+            width, height = image.size
+
+            # Crop the top and bottom regions
+            top = image.crop((0, 0, width, int(height * 0.05)))
+            bottom = image.crop((0, int(height * 0.95), width, height))
+
+            start = time.perf_counter()
+            
+            # Recognize the document number from the top region
+            top_text = recognize_text(top)
+            document_number = extract_document_number(top_text)
+
+            # Recognize page numbering from the bottom region
+            bottom_text = recognize_text(bottom)
+            page_info = extract_page_number(bottom_text)
+
+            # Save the raw OCR results for debugging.
+            with open(debug_log_path, "a", encoding="utf-8") as debug_file:
+                debug_file.write(f"File: {filename}\n")
+                debug_file.write(f"PDF page: {page_number}\n\n")
+
+                debug_file.write("[TOP CROP OCR]\n")
+                debug_file.write(top_text if top_text else "[No text detected]")
+                debug_file.write("\n\n")
+
+                debug_file.write("[BOTTOM CROP OCR]\n")
+                debug_file.write(bottom_text if bottom_text else "[No text detected]")
+                debug_file.write("\n")
+                debug_file.write(f"Extracted page info: {page_info}\n")
+                debug_file.write("-" * 50 + "\n\n")
+
+            ocr_time = time.perf_counter() - start
+
+            print(
+                f"Page {page_number}: "
+                f"OCR={ocr_time:.2f}s"
+            )
 
             print(f"\n--- Scanning page: {page_number} ---")
-
-            page_info = extract_page_number(text)
-            document_number = extract_document_number(text)
 
             # Log debug information if document number is not found.
             #if document_number is None:
@@ -255,7 +297,7 @@ for filename in os.listdir(folder):
 
             record = {
                 "page_number": page_number,
-                "text": text,
+                "text": "",
                 "page_info": page_info,
                 "document_number": document_number
             }
