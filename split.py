@@ -1,13 +1,28 @@
 import os
 import re
 import pymupdf
-import pytesseract
+import numpy as np
+from paddleocr import PaddleOCR
 
 folder = os.path.join(os.path.dirname(__file__), "pdfs")
 
-pytesseract.pytesseract.tesseract_cmd = (
-    r"C:\Tesseract-OCR\tesseract.exe"
+ocr = PaddleOCR(
+    use_doc_orientation_classify=False,
+    use_doc_unwarping=False,
+    use_textline_orientation=False,
+    lang="ch",
+    enable_mkldnn=False,
 )
+
+def recognize_text(image):
+    results = ocr.predict(np.array(image))
+
+    texts = []
+
+    for result in results:
+        texts.extend(result["rec_texts"])
+
+    return "\n".join(texts)
 
 def extract_page_number(text):
     # Match page numbering such as 第1頁，共2頁.
@@ -223,40 +238,20 @@ for filename in os.listdir(folder):
 
         for page_number, page in enumerate(doc, start=1):
             # Convert the PDF page into an image
-            pix = page.get_pixmap(dpi=300)
+            pix = page.get_pixmap()
             image = pix.pil_image()
 
             # Recognize Traditional Chinese and English
-            text = pytesseract.image_to_string(
-                image,
-                lang="chi_tra+eng"
-            )
+            text = recognize_text(image)
 
             print(f"\n--- Scanning page: {page_number} ---")
 
             page_info = extract_page_number(text)
-
-            # Scan the top of the page for document number
-            width, height = image.size
-
-            top = image.crop((0, 0, width, int(height * 0.10)))
-
-            #enlarge the top image to improve OCR accuracy
-            top = top.resize((top.width * 2, top.height * 2))
-
-            top_text = pytesseract.image_to_string(
-                top,
-                lang="chi_tra+eng",
-                config="--psm 6"
-            )
-
-            document_number = extract_document_number(top_text)
+            document_number = extract_document_number(text)
 
             # Log debug information if document number is not found.
             #if document_number is None:
                 #print(f"\nDEBUG: {filename}, PDF page {page_number}")
-                #print("Top-region OCR:")
-                #print(repr(top_text))
 
             record = {
                 "page_number": page_number,
