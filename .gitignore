@@ -1,5 +1,7 @@
 .venv/
+.venv-paddle/
 
 files/
+test_results
 pdfs/
 split_pdfs/
