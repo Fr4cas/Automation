@@ -70,6 +70,14 @@ def extract_document_number(text):
         normalized
     )
 
+    # Joins prefix & date split across lines
+    normalized = re.sub(
+        r"([A-Z0-9]{4,})\s*\n\s*(\d{6})",
+        r"\1-\2",
+        normalized,
+        flags=re.IGNORECASE
+    )
+
     # First, try the standard document number format.
     match = re.search(
         r"\b([A-Z0-9]{4,})\s*-\s*(\d{6})\s*-\s*(\d{3})\b",
