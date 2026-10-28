@@ -60,7 +60,7 @@ def extract_document_number(text):
 
     # Noralize common OCR hyphen subs
     normalized = text
-    for char in ("~", "～", "—", "－", "﹣", "="):
+    for char in ("~", "～", "—", "－", "﹣", "=", "+"):
         normalized = normalized.replace(char, "-")
 
     # Remove spaces between digits inserted by OCR.
