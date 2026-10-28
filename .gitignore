@@ -2,6 +2,7 @@
 .venv-paddle/
 
 files/
-test_results
 pdfs/
+test_results/
+extracted_text
 split_pdfs/
