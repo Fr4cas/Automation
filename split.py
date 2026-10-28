@@ -222,11 +222,16 @@ def split_documents(source_path, documents, output_folder):
 
             start_page = pages[0]["page_number"]
             end_page = pages[-1]["page_number"]
+            document_number = pages[0]["document_number"]
 
-            output_name = (
-                f"{source_name}_document_{index:03d}_"
-                f"pages_{start_page}-{end_page}.pdf"
-            )
+            if document_number:
+                sequence_number = int(document_number.rsplit("-", 1)[-1])
+                output_name = f"{sequence_number:02d}.pdf"
+            else:
+                output_name = (
+                    f"{source_name}_document_{index:03d}_"
+                    f"pages_{start_page}-{end_page}.pdf"
+                )
 
             output_path = os.path.join(output_folder, output_name)
 
