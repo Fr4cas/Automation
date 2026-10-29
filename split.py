@@ -70,40 +70,31 @@ def extract_document_number(text):
         normalized
     )
 
-    # Joins prefix & date split across lines
-    normalized = re.sub(
-        r"([A-Z0-9]{4,})\s*\n\s*(\d{6})",
-        r"\1-\2",
-        normalized,
-        flags=re.IGNORECASE
-    )
+    # Joins prefix & date split across lines (disabled)
+    #normalized = re.sub(
+    #     r"([A-Z0-9]{4,})\s*\n\s*(\d{6})",
+    #     r"\1-\2",
+    #     normalized,
+    #     flags=re.IGNORECASE
+    # )
 
     # First, try the standard document number format.
     match = re.search(
-        r"\b([A-Z0-9]{4,})\s*-\s*(\d{6})\s*-\s*(\d{3})\b",
+        r"(\d{6})\s*-\s*(\d{3})",
         normalized,
-        re.IGNORECASE
     )
 
     if match:
-        return (
-            f"{match.group(1).upper()}-"
-            f"{match.group(2)}-{match.group(3)}"
-        )
+        return f"{match.group(1)}-{match.group(2)}"
 
-    # Fallback: allow OCR to miss either or both hyphens.
+    # Fallback: allow OCR to miss hyphens.
     match = re.search(
-        r"\b([A-Z0-9]{4,})\s*-?\s*(\d{9})\b",
-        normalized,
-        re.IGNORECASE
-)
+        r"\b(\d{6})\s*(\d{3})\b",
+        normalized
+    )
 
     if match:
-        digits = match.group(2)
-        return (
-            f"{match.group(1).upper()}-"
-            f"{digits[:6]}-{digits[6:]}"
-        )
+        return f"{match.group(1)}-{match.group(2)}"
 
     return None
 
