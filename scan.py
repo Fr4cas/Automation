@@ -1,4 +1,5 @@
 import os
+import time
 import numpy as np
 import pymupdf
 from paddleocr import PaddleOCR
@@ -35,7 +36,15 @@ def extract_pdf_text(file_path):
             pix = page.get_pixmap()
             image = pix.pil_image()
 
+            start = time.perf_counter()
             text = recognize_text(image)
+            ocr_time = time.perf_counter() - start
+
+            print(
+                f"Page {page_number}: "
+                f"OCR={ocr_time:.2f}s"
+            )
+
             all_pages.append(
                 f"--- Page {page_number} ---\n{text}"
             )
