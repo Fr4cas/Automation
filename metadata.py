@@ -34,6 +34,22 @@ def extract_receipt_date(text):
 
     return ", ".join(dates)
 
+def extract_issue_date(text):
+    match = re.search(
+        r"發文日期[:：]?\s*中華民國\s*(\d{2,3})年\s*(\d{1,2})月\s*(\d{1,2})日",
+        text
+    )
+
+    if match:
+        year = int(match.group(1)) + 1911
+        month = int(match.group(2))
+        day = int(match.group(3))
+
+        return f"{year:04d}/{month:02d}/{day:02d}"
+
+    return ""
+
+
 if __name__ == "__main__":
     txt_files = sorted(
         filename for filename in os.listdir(folder)
@@ -49,8 +65,10 @@ if __name__ == "__main__":
         text = read_text_file(file_path)
         receipt_number = extract_receipt_number(text)
         receipt_date = extract_receipt_date(text)
+        issue_date = extract_issue_date(text)
 
         print(f"Reading: {filename}")
         print("Receipt number:", receipt_number)
         print("Receipt date: ", receipt_date)
+        print("Issue date:", issue_date)
         print(text)
