@@ -19,6 +19,21 @@ def extract_receipt_number(text):
     return None
 
 
+def extract_receipt_date(text):
+    matches = re.findall(r"26(\d{4})-\d{2}", text)
+
+    if not matches:
+        return ""
+
+    dates = []
+
+    for digits in matches:
+        month = digits[:2]
+        day = digits[2:4]
+        dates.append(f"2026/{month}/{day}")
+
+    return ", ".join(dates)
+
 if __name__ == "__main__":
     txt_files = sorted(
         filename for filename in os.listdir(folder)
@@ -33,7 +48,9 @@ if __name__ == "__main__":
 
         text = read_text_file(file_path)
         receipt_number = extract_receipt_number(text)
+        receipt_date = extract_receipt_date(text)
 
         print(f"Reading: {filename}")
         print("Receipt number:", receipt_number)
+        print("Receipt date: ", receipt_date)
         print(text)
