@@ -95,6 +95,31 @@ def extract_document_type(text):
     
     return "正本"
 
+def extract_subject(text):
+    clean_text = re.sub(r"\s", "", text)
+
+    end_keywords = [
+        "請查照", "敬請查照", "惠請查照",
+        "請備查", "敬請備查", "惠請備查",
+        "鑒核", "鑑定", "鑑核",
+        "請鑒核", "請參辦", "請參核",
+        "請鑑定", "請檢送", "審定。"
+    ]
+
+    end_pattern = "|".join(end_keywords)
+
+    match = re.search(
+        rf"主旨[:：](.*?({end_pattern}))",
+        clean_text
+    )
+
+    if match:
+        subject = match.group(1).strip()
+        subject = subject.replace(",", "，")
+        return subject
+
+    return ""
+
 if __name__ == "__main__":
     txt_files = sorted(
         filename for filename in os.listdir(folder)
@@ -114,6 +139,7 @@ if __name__ == "__main__":
         reference_number = extract_reference_number(text)
         issuing_authority = extract_issuing_authority(text)
         document_type = extract_document_type(text)
+        subject = extract_subject(text)
 
         print(f"Reading: {filename}")
         print("Receipt number:", receipt_number)
@@ -122,4 +148,5 @@ if __name__ == "__main__":
         print("Reference number:", reference_number)
         print("Issuing authority:", issuing_authority)
         print("Document type:", document_type)
+        print("Subject:", subject)
         print(text)
