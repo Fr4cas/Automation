@@ -49,6 +49,16 @@ def extract_issue_date(text):
 
     return ""
 
+def extract_reference_number(text):
+    match = re.search(
+        r"發文字號[:：]?\s*([^\s\n]+)",
+        text
+    )
+
+    if match:
+        return match.group(1)
+
+    return ""
 
 if __name__ == "__main__":
     txt_files = sorted(
@@ -66,9 +76,11 @@ if __name__ == "__main__":
         receipt_number = extract_receipt_number(text)
         receipt_date = extract_receipt_date(text)
         issue_date = extract_issue_date(text)
+        reference_number = extract_reference_number(text)
 
         print(f"Reading: {filename}")
         print("Receipt number:", receipt_number)
         print("Receipt date: ", receipt_date)
         print("Issue date:", issue_date)
+        print("Reference number:", reference_number)
         print(text)
