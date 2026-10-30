@@ -169,6 +169,17 @@ def extract_explanation(text):
     return "\n".join(cleaned_lines).strip()
 
 
+def extract_attachment(text):
+    match = re.search(
+        r"附件[:：]\s*([\s\S]*?)(?=\n\s*(?:主旨|說明|正本|副本|$))",
+        text
+    )
+
+    if match:
+        return match.group(1).strip()
+
+    return ""
+
 if __name__ == "__main__":
     with open(output_file, "w", encoding="utf-8") as file:
         file.write("Metadata Extraction Results\n")
@@ -195,6 +206,7 @@ if __name__ == "__main__":
         document_type = extract_document_type(text)
         subject = extract_subject(text)
         explanation = extract_explanation(text)
+        attachment = extract_attachment(text)
 
         with open(output_file, "a", encoding="utf-8") as file:
             file.write(f"\n{'=' * 50}\n")
@@ -207,5 +219,6 @@ if __name__ == "__main__":
             file.write(f"發文字號: {reference_number}\n")
             file.write(f"發文機關: {issuing_authority}\n")
             file.write(f"文別: {document_type}\n")
+            file.write(f"附件: {attachment}\n")
             file.write(f"主旨: {subject}\n")
             file.write(f"說明: {explanation}\n")
