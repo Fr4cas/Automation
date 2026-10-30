@@ -3,6 +3,11 @@ import re
 
 folder = os.path.join(os.path.dirname(__file__), "extracted_text")
 
+output_file = os.path.join(
+    os.path.dirname(__file__),
+    "metadata_results.txt"
+)
+
 def read_text_file(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
@@ -166,6 +171,9 @@ def extract_explanation(text):
 
 
 if __name__ == "__main__":
+    with open(output_file, "w", encoding="utf-8") as file:
+        file.write("Metadata Extraction Results\n")
+
     txt_files = sorted(
         filename for filename in os.listdir(folder)
         if filename.lower().endswith(".txt")
@@ -173,9 +181,11 @@ if __name__ == "__main__":
 
     if not txt_files:
         print(f"No text files found in {folder}")
-    else:
-        filename = txt_files[0]
+    
+    for filename in txt_files:
         file_path = os.path.join(folder, filename)
+
+        print(f"Scanned: {filename}")
 
         text = read_text_file(file_path)
         receipt_number = extract_receipt_number(text)
@@ -187,14 +197,16 @@ if __name__ == "__main__":
         subject = extract_subject(text)
         explanation = extract_explanation(text)
 
-        print(f"Reading: {filename}")
-        print("Receipt number:", receipt_number)
-        print("Receipt date:", receipt_date)
-        print("Issue date:", issue_date)
-        print("Reference number:", reference_number)
-        print("Issuing authority:", issuing_authority)
-        print("Document type:", document_type)
-        print("Subject:", subject)
-        print("Explanation:")
-        print(explanation)
-        # print(text)
+        with open(output_file, "a", encoding="utf-8") as file:
+            file.write(f"\n{'=' * 50}\n")
+            file.write(f"File: {filename}\n")
+            file.write(f"{'=' * 50}\n")
+
+            file.write(f"收文單號: {receipt_number}\n")
+            file.write(f"收文日期: {receipt_date}\n")
+            file.write(f"發文日期: {issue_date}\n")
+            file.write(f"發文字號: {reference_number}\n")
+            file.write(f"發文機關: {issuing_authority}\n")
+            file.write(f"文別: {document_type}\n")
+            file.write(f"主旨: {subject}\n")
+            file.write(f"說明: {explanation}\n")
