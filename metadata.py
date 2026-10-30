@@ -120,6 +120,51 @@ def extract_subject(text):
 
     return ""
 
+def extract_explanation(text):
+    subject_start = re.search(r"主旨[:：]", text)
+
+    if not subject_start: 
+        return ""
+
+    after_subject = text[subject_start.start():subject_start.start() + 1500]
+
+    subject_end = re.search(
+        r"主旨[:：][\s\S]+?[。．]\s*\n",
+            after_subject
+    )
+
+    if not subject_end:
+        return ""
+    
+    explanation_text = after_subject[subject_end.end():]
+
+    explanation_text = re.split(
+        r"^\s*正本[:：]",
+        explanation_text,
+        maxsplit=1,
+        flags=re.MULTILINE
+    )[0]
+
+    noise_patterns = [
+        r"^騎縫入", r"^騎縫", r"^訂",
+        r"^電于", r"^電文骑", r"^騎后",
+        r"^文", r"^公換章", r"^換章",
+        r"^第[\d一二三四五六七八九十]+頁",
+        r"^共[\d一二三四五六七八九十]+頁",
+        r"^\d+\s*$", r"^\d+/\d+頁"
+    ]
+
+    cleaned_lines = []
+
+    for line in explanation_text.splitlines():
+        trimmed = line.strip()
+
+        if not any(re.search(pattern, trimmed) for pattern in noise_patterns):
+            cleaned_lines.append(line)
+
+    return "\n".join(cleaned_lines).strip()
+
+
 if __name__ == "__main__":
     txt_files = sorted(
         filename for filename in os.listdir(folder)
@@ -140,6 +185,7 @@ if __name__ == "__main__":
         issuing_authority = extract_issuing_authority(text)
         document_type = extract_document_type(text)
         subject = extract_subject(text)
+        explanation = extract_explanation(text)
 
         print(f"Reading: {filename}")
         print("Receipt number:", receipt_number)
@@ -149,4 +195,6 @@ if __name__ == "__main__":
         print("Issuing authority:", issuing_authority)
         print("Document type:", document_type)
         print("Subject:", subject)
-        print(text)
+        print("Explanation:")
+        print(explanation)
+        # print(text)
