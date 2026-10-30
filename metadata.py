@@ -71,6 +71,30 @@ def extract_issuing_authority(text):
 
     return ""
 
+def extract_document_type(text):
+    match = re.search(
+        r"說明[:：]",
+        text
+    )
+
+    if not match:
+        return "正本"
+
+    after_explanation = text[match.start():]
+
+    match = re.search(
+        r"副本[:：]?\s*([^\n\r]+)",
+        after_explanation
+    )
+
+    if match:
+        copy_content = match.group(1)
+    
+        if re.search(r"宏昇營造|新雄營造", copy_content):
+            return "副本"
+    
+    return "正本"
+
 if __name__ == "__main__":
     txt_files = sorted(
         filename for filename in os.listdir(folder)
@@ -89,6 +113,7 @@ if __name__ == "__main__":
         issue_date = extract_issue_date(text)
         reference_number = extract_reference_number(text)
         issuing_authority = extract_issuing_authority(text)
+        document_type = extract_document_type(text)
 
         print(f"Reading: {filename}")
         print("Receipt number:", receipt_number)
@@ -96,4 +121,5 @@ if __name__ == "__main__":
         print("Issue date:", issue_date)
         print("Reference number:", reference_number)
         print("Issuing authority:", issuing_authority)
+        print("Document type:", document_type)
         print(text)
