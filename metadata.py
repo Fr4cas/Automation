@@ -41,7 +41,7 @@ def extract_receipt_date(text):
 
 def extract_issue_date(text):
     match = re.search(
-        r"發文日期[:：]?\s*中華民國\s*(\d{2,3})年\s*(\d{1,2})月\s*(\d{1,2})日",
+        r"發文日期[:：]?\s*中華民[國园]\s*(\d{2,3})年\s*(\d{1,2})月\s*(\d{1,2})日",
         text
     )
 
@@ -108,7 +108,8 @@ def extract_subject(text):
         "請備查", "敬請備查", "惠請備查",
         "鑒核", "鑑定", "鑑核",
         "請鑒核", "請參辦", "請參核",
-        "請鑑定", "請檢送", "審定。"
+        "請鑑定", "請檢送", "審定。",
+        "請依說明二辦理", "建請同意核定"
     ]
 
     end_pattern = "|".join(end_keywords)
@@ -126,22 +127,19 @@ def extract_subject(text):
     return ""
 
 def extract_explanation(text):
-    subject_start = re.search(r"主旨[:：]", text)
+    explanation_start = re.search(r"說明[:：]", text)
 
-    if not subject_start: 
+    if not explanation_start: 
         return ""
 
-    after_subject = text[subject_start.start():subject_start.start() + 1500]
+    explanation_text = text[explanation_start.end():]
 
-    subject_end = re.search(
-        r"主旨[:：][\s\S]+?[。．]\s*\n",
-            after_subject
-    )
-
-    if not subject_end:
-        return ""
-    
-    explanation_text = after_subject[subject_end.end():]
+    explanation_text = re.split(
+        r"^\s*正本[:：]",
+        explanation_text,
+        maxsplit=1,
+        flags=re.MULTILINE
+    )[0]
 
     explanation_text = re.split(
         r"^\s*正本[:：]",
@@ -153,10 +151,11 @@ def extract_explanation(text):
     noise_patterns = [
         r"^騎縫入", r"^騎縫", r"^訂",
         r"^電于", r"^電文骑", r"^騎后",
-        r"^文", r"^公換章", r"^換章",
-        r"^第[\d一二三四五六七八九十]+頁",
-        r"^共[\d一二三四五六七八九十]+頁",
-        r"^\d+\s*$", r"^\d+/\d+頁"
+        r"^文", r"^卷文", r"^公換章", r"^換章",
+        r"^--- Page [\d123456789] ---",
+        r"^第[\d一二三四五六七八九十]+[頁員負貝页]",
+        r"^共[\d一二三四五六七八九十]+[頁員負貝页]",
+        r"^\d+\s*$", r"^\d+/\d+[頁員負貝页]"
     ]
 
     cleaned_lines = []
