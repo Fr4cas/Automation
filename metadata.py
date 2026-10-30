@@ -60,6 +60,17 @@ def extract_reference_number(text):
 
     return ""
 
+def extract_issuing_authority(text):
+    match = re.search(
+        r"([^\s\n\r]{2,}?)(?=\s*(及)?書?函)",
+        text
+    )
+
+    if match:
+        return match.group(1)
+
+    return ""
+
 if __name__ == "__main__":
     txt_files = sorted(
         filename for filename in os.listdir(folder)
@@ -77,10 +88,12 @@ if __name__ == "__main__":
         receipt_date = extract_receipt_date(text)
         issue_date = extract_issue_date(text)
         reference_number = extract_reference_number(text)
+        issuing_authority = extract_issuing_authority(text)
 
         print(f"Reading: {filename}")
         print("Receipt number:", receipt_number)
-        print("Receipt date: ", receipt_date)
+        print("Receipt date:", receipt_date)
         print("Issue date:", issue_date)
         print("Reference number:", reference_number)
+        print("Issuing authority:", issuing_authority)
         print(text)
