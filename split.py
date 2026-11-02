@@ -269,6 +269,7 @@ for filename in os.listdir(folder):
 
             # Crop the top and bottom regions
             top = image.crop((0, 0, width, int(height * 0.05)))
+            used_10_percent_crop = False
             bottom = image.crop((0, int(height * 0.95), width, height))
 
             bottom_text = recognize_text(bottom)
@@ -276,6 +277,8 @@ for filename in os.listdir(folder):
 
             # Retry with a larger crop if page number is not recognized.
             if page_info is None:
+                used_10_percent_crop = True
+                
                 print(f"Page {page_number}: Retrying with 10% crop")
                 bottom = image.crop(
                     (0, int(height * 0.90), width, height)
@@ -308,6 +311,11 @@ for filename in os.listdir(folder):
                 debug_file.write("\n\n")
 
                 debug_file.write("[BOTTOM CROP OCR]\n")
+                if used_10_percent_crop:
+                    if page_info:
+                        debug_file.write("Status: Found on 10% scan\n")
+                    else:
+                        debug_file.write("Status: Still not detected after 10% scan\n")
                 debug_file.write(bottom_text if bottom_text else "[No text detected]")
                 debug_file.write("\n")
                 debug_file.write(f"Extracted page info: {page_info}\n")
