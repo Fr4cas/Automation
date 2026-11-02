@@ -4,5 +4,6 @@
 files/
 pdfs/
 test_results/
-extracted_text
+extracted_text/
 split_pdfs/
+debug_logs/

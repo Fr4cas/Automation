@@ -7,8 +7,15 @@ from paddleocr import PaddleOCR
 
 folder = os.path.join(os.path.dirname(__file__), "pdfs")
 
-debug_log_path = os.path.join(
+debug_folder = os.path.join(
     os.path.dirname(__file__),
+    "debug_logs"
+)
+
+os.makedirs(debug_folder, exist_ok=True)
+
+debug_log_path = os.path.join(
+    debug_folder,
     "ocr_debug_results.txt"
 )
 

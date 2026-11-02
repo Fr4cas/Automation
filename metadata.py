@@ -3,9 +3,12 @@ import re
 
 folder = os.path.join(os.path.dirname(__file__), "extracted_text")
 
+debug_folder = os.path.join(os.path.dirname(__file__), "debug_logs")
+os.makedirs(debug_folder, exist_ok=True)
+
 output_file = os.path.join(
-    os.path.dirname(__file__),
-    "metadata_results.txt"
+    debug_folder,
+    "metadata_debug_results.txt"
 )
 
 def read_text_file(file_path):
