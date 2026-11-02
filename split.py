@@ -40,7 +40,7 @@ def extract_page_number(text):
     # 員, 負, and 貝.
     page_char = r"[頁員負貝页]"
 
-    match = re.search(rf"第\s*(\d+)\s*{page_char}\s*[，,、,·]\s*共\s*(\d+)\s*{page_char}",
+    match = re.search(rf"第\s*(\d+)\s*{page_char}\s*[，,、·]?\s*共\s*(\d+)\s*{page_char}",
      text)
     
     if match:
@@ -270,6 +270,19 @@ for filename in os.listdir(folder):
             # Crop the top and bottom regions
             top = image.crop((0, 0, width, int(height * 0.05)))
             bottom = image.crop((0, int(height * 0.95), width, height))
+
+            bottom_text = recognize_text(bottom)
+            page_info = extract_page_number(bottom_text)
+
+            # Retry with a larger crop if page number is not recognized.
+            if page_info is None:
+                print(f"Page {page_number}: Retrying with 10% crop")
+                bottom = image.crop(
+                    (0, int(height * 0.90), width, height)
+                )
+
+                bottom_text = recognize_text(bottom)
+                page_info = extract_page_number(bottom_text)
 
             start = time.perf_counter()
 
