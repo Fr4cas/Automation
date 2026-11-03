@@ -22,11 +22,51 @@ def recognize_text(image):
     results = ocr.predict(np.array(image))
 
     texts = []
+    boxes = []
 
     for result in results:
         texts.extend(result["rec_texts"])
+        boxes.extend(result["dt_polys"])
 
-    return "\n".join(texts)
+    return texts, boxes
+
+def improve_subject(page, texts, boxes):
+    subject_index = next(
+        (i for i, text in enumerate(texts) if "主旨" in text),
+        None
+    )
+
+    if subject_index is None:
+        return texts
+
+    explanation_index = next(
+        (
+            i for i, text in enumerate(texts)
+            if "說明" in text and i > subject_index
+        ),
+        None
+    )
+
+    if explanation_index is None:
+        return texts
+
+    top = max(0, int(np.min(boxes[subject_index][:, 1])) - 20)
+    bottom = int(np.min(boxes[explanation_index][:, 1])) - 10
+
+    clip = pymupdf.Rect(0, top, page.rect.width, bottom)
+    crop_pix = page.get_pixmap(clip=clip, dpi=200)
+    crop_image = crop_pix.pil_image()
+
+    start = time.perf_counter()
+    crop_texts, _ = recognize_text(crop_image)
+    crop_time = time.perf_counter() - start
+
+    print("Improved subject OCR:")
+    print("\n".join(crop_texts))
+    print(f"Subject OCR={crop_time:.2f}s")
+    print(f"Subject crop: top={top}, bottom={bottom}")
+
+    return texts[:subject_index] + crop_texts + texts[explanation_index:]
 
 def extract_pdf_text(file_path):
     all_pages = []
@@ -37,7 +77,12 @@ def extract_pdf_text(file_path):
             image = pix.pil_image()
 
             start = time.perf_counter()
-            text = recognize_text(image)
+            texts, boxes = recognize_text(image)
+
+            if page_number == 1:
+                texts = improve_subject(page, texts, boxes)
+
+            text = "\n".join(texts)
             ocr_time = time.perf_counter() - start
 
             print(
