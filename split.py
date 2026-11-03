@@ -279,6 +279,8 @@ for filename in os.listdir(folder):
             used_10_percent_crop = False
             bottom = image.crop((0, int(height * 0.95), width, height))
 
+            start = time.perf_counter()
+
             bottom_text = recognize_text(bottom)
             page_info = extract_page_number(bottom_text)
 
@@ -293,12 +295,6 @@ for filename in os.listdir(folder):
 
                 bottom_text = recognize_text(bottom)
                 page_info = extract_page_number(bottom_text)
-
-            start = time.perf_counter()
-
-            # Recognize page numbering from the bottom region
-            bottom_text = recognize_text(bottom)
-            page_info = extract_page_number(bottom_text)
 
             # Recognize the document number from the top region
             top_text = None
@@ -330,12 +326,12 @@ for filename in os.listdir(folder):
 
             ocr_time = time.perf_counter() - start
 
+            print(f"\n--- Scanning page: {page_number} ---")
+
             print(
                 f"Page {page_number}: "
                 f"OCR={ocr_time:.2f}s"
             )
-
-            print(f"\n--- Scanning page: {page_number} ---")
 
             record = {
                 "page_number": page_number,
