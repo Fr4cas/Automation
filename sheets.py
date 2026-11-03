@@ -1,9 +1,12 @@
+import os
 import json
 import dotenv
 import urllib.request
 import urllib.error
 
 from dotenv import load_dotenv
+
+load_dotenv()
 
 WEB_APP_URL = os.getenv("GOOGLE_SHEETS_URL")
 SECRET_TOKEN = os.getenv("GOOGLE_SHEETS_TOKEN")

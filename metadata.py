@@ -1,5 +1,6 @@
 import os
 import re
+from sheets import send_metadata
 
 folder = os.path.join(os.path.dirname(__file__), "extracted_text")
 
@@ -225,3 +226,19 @@ if __name__ == "__main__":
             file.write(f"附件: {attachment}\n")
             file.write(f"主旨: {subject}\n")
             file.write(f"說明: {explanation}\n")
+
+            metadata = {
+                "recvNum": receipt_number,
+                "recvDate": receipt_date,
+                "fromNum": reference_number,
+                "fromDate": issue_date,
+                "fromObj": issuing_authority,
+                "docuType": document_type,
+                "pSubject": subject,
+                "pTreatment": explanation
+            }
+
+            try:
+                send_metadata(metadata)
+            except Exception as error:
+                print(f"Google Sheets upload failed: {error}")
