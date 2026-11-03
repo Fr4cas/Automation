@@ -3,6 +3,7 @@ import time
 import numpy as np
 import pymupdf
 from paddleocr import PaddleOCR
+from opencc import OpenCC
 
 # Input & Output folders
 folder = os.path.join(os.path.dirname(__file__), "split_pdfs")
@@ -17,6 +18,8 @@ ocr = PaddleOCR(
     lang="ch",
     enable_mkldnn=False
 )
+
+converter = OpenCC("s2t")
 
 def recognize_text(image):
     results = ocr.predict(np.array(image))
@@ -82,7 +85,7 @@ def extract_pdf_text(file_path):
             if page_number == 1:
                 texts = improve_subject(page, texts, boxes)
 
-            text = "\n".join(texts)
+            text = converter.convert("\n".join(texts))
             ocr_time = time.perf_counter() - start
 
             print(
