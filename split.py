@@ -276,9 +276,9 @@ for filename in os.listdir(folder):
 
             # Crop the top and bottom regions
             top = image.crop((0, 0, width, int(height * 0.05)))
-            used_10_percent_crop = False
             bottom = image.crop((0, int(height * 0.95), width, height))
-
+            used_10_percent_top = False
+            used_10_percent_bottom = False
             start = time.perf_counter()
 
             bottom_text = recognize_text(bottom)
@@ -286,9 +286,9 @@ for filename in os.listdir(folder):
 
             # Retry with a larger crop if page number is not recognized.
             if page_info is None:
-                used_10_percent_crop = True
+                used_10_percent_bottom = True
                 
-                print(f"Page {page_number}: Retrying with 10% crop")
+                print(f"Page {page_number}: Retrying with 10% bottom crop")
                 bottom = image.crop(
                     (0, int(height * 0.90), width, height)
                 )
@@ -304,17 +304,34 @@ for filename in os.listdir(folder):
                 top_text = recognize_text(top)
                 document_number = extract_document_number(top_text)
 
+                # Retry with a larger crop if not recognized.
+                if document_number is None:
+                    used_10_percent_top = True
+
+                    print(f"Page {page_number}: Retrying with 10% top crop")
+                    top = image.crop(
+                        (0, 0, width, int(height * 0.10))
+                    )
+                    top_text = recognize_text(top)
+                    document_number = extract_document_number(top_text)
+
             # Save the raw OCR results for debugging.
             with open(debug_log_path, "a", encoding="utf-8") as debug_file:
                 debug_file.write(f"File: {filename}\n")
                 debug_file.write(f"PDF page: {page_number}\n\n")
 
                 debug_file.write("[TOP CROP OCR]\n")
+                if used_10_percent_top:
+                    if document_number:
+                        debug_file.write("Status: Found on 10% scan\n")
+                    else:
+                        debug_file.write("Status: Still not detected after 10% scan\n")
+
                 debug_file.write(top_text if top_text else "[No text detected]")
                 debug_file.write("\n\n")
 
                 debug_file.write("[BOTTOM CROP OCR]\n")
-                if used_10_percent_crop:
+                if used_10_percent_bottom:
                     if page_info:
                         debug_file.write("Status: Found on 10% scan\n")
                     else:
