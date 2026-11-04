@@ -2,7 +2,7 @@ from pathlib import Path
 from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
     QWidget, QLabel, QPushButton, QLineEdit,
-    QFileDialog,
+    QFileDialog, QProgressBar, QTextEdit,
     )
 
 class MainWindow(QMainWindow):
@@ -16,6 +16,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         layout = QVBoxLayout(central_widget)
+        layout.setSpacing(12)
+        layout.setContentsMargins(20, 20, 20, 20)
         layout.addWidget(QLabel("Input folder"))
 
         folder_layout = QHBoxLayout()
@@ -37,7 +39,45 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.start_button)
 
+        # Progress bar
+        self.progress_bar = QProgressBar()
+        QProgressBar.setRange(self.progress_bar, 0, 100)
+
+        layout.addWidget(self.progress_bar)
+
+        # Status label
+        self.status_label = QLabel("Waiting to start")
+
+        layout.addWidget(self.status_label)
+
+        results_layout = QHBoxLayout()
+
+        # Results labels
+        self.success_label = QLabel("Success: 0")
+        self.failed_label = QLabel("Failed: 0")
+
+        results_layout.addWidget(self.success_label)
+        results_layout.addWidget(self.failed_label)
+
+        layout.addLayout(results_layout)
         
+        # Process log
+        layout.addWidget(QLabel("Processing Log"))
+        self.log_output = QTextEdit()
+        self.log_output.setReadOnly(True)
+        layout.addWidget(self.log_output)
+
+        # Output and Error folder buttons
+        folder_buttons = QHBoxLayout()
+        self.output_button = QPushButton("Open Output Folder")
+        self.error_button = QPushButton("Open Error Folder")
+
+        self.output_button.setEnabled(False)
+        self.error_button.setEnabled(False)
+
+        folder_buttons.addWidget(self.output_button)
+        folder_buttons.addWidget(self.error_button)
+        layout.addLayout(folder_buttons)
 
     def select_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Input Folder")
