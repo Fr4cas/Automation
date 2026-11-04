@@ -1,3 +1,55 @@
 QMainWindow {
     background-color: #F5F7FA;
+    color: #1E293B;
+}
+
+QFrame#inputCard {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+}
+
+QPushButton {
+    background-color: #2563EB;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 18px;
+    font-weight: 600;
+}
+
+QPushButton:hover {
+    background-color: #1D4ED8;
+}
+
+QLineEdit {
+    background-color: #FFFFFF;
+    color: #1E293B;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    padding: 9px 12px;
+    selection-background-color: #2563EB;
+}
+
+QLineEdit:focus {
+    border: 1px solid #2563EB;
+}
+
+QPushButton#startButton {
+    background-color: #2563EB;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 11pt;
+    font-weight: 600;
+}
+
+QPushButton#startButton:hover {
+    background-color: #1D4ED8;
+}
+
+QPushButton#startButton:disabled {
+    background-color: #CBD5E1;
+    color: #64748B;
 }

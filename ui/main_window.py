@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
     QWidget, QLabel, QPushButton, QLineEdit,
     QFileDialog, QProgressBar, QTextEdit,
+    QFrame,
     )
 
 class MainWindow(QMainWindow):
@@ -18,7 +19,13 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(central_widget)
         layout.setSpacing(12)
         layout.setContentsMargins(20, 20, 20, 20)
-        layout.addWidget(QLabel("Input folder"))
+        self.input_card = QFrame()
+        self.input_card.setObjectName("inputCard")
+
+        input_card_layout = QVBoxLayout(self.input_card)
+        input_card_layout.setContentsMargins(20, 20, 20, 20)
+        input_card_layout.setSpacing(12)
+        input_card_layout.addWidget(QLabel("Input folder"))
 
         folder_layout = QHBoxLayout()
         self.folder_input = QLineEdit()
@@ -31,10 +38,13 @@ class MainWindow(QMainWindow):
         folder_layout.addWidget(self.folder_input)
         folder_layout.addWidget(browse_button)
 
-        layout.addLayout(folder_layout)
+        input_card_layout.addLayout(folder_layout)
+
+        layout.addWidget(self.input_card)
 
         # Process button
         self.start_button = QPushButton("Start Processing")
+        self.start_button.setObjectName("startButton")
         self.start_button.setEnabled(False)
 
         layout.addWidget(self.start_button)
