@@ -35,6 +35,7 @@ class Sidebar(QWidget):
         layout.addSpacing(24)
 
         section_label = QLabel("WORKSPACE")
+        layout.addWidget(section_label)
 
         self.overview_button = QPushButton("Overview")
         self.overview_button.setObjectName("navButton")
@@ -68,5 +69,3 @@ class Sidebar(QWidget):
         self.settings_button.setObjectName("navButton")
 
         layout.addWidget(self.settings_button)
-
-        layout.addWidget(section_label)
