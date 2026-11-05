@@ -64,19 +64,58 @@ class MainWindow(QMainWindow):
         # Status label
         self.status_label = QLabel("Waiting to start")
         progress_card_layout.addWidget(self.status_label)
-        
+
         layout.addWidget(self.progress_card)
 
         results_layout = QHBoxLayout()
 
         # Results labels
-        self.success_label = QLabel("Success: 0")
-        self.failed_label = QLabel("Failed: 0")
+        self.results_card = QFrame()
+        self.results_card.setObjectName("resultsCard")
 
-        results_layout.addWidget(self.success_label)
-        results_layout.addWidget(self.failed_label)
+        results_card_layout = QVBoxLayout(self.results_card)
+        results_card_layout.setContentsMargins(20, 20, 20, 20)
+        results_card_layout.setSpacing(12)
 
-        layout.addLayout(results_layout)
+        results_blocks_layout = QHBoxLayout()
+        results_blocks_layout.setSpacing(12)
+
+        self.success_block = QFrame()
+        self.success_block.setObjectName("successBlock")
+
+        self.failed_block = QFrame()
+        self.failed_block.setObjectName("failedBlock")
+
+        success_block_layout = QVBoxLayout(self.success_block)
+        success_block_layout.setContentsMargins(16, 16, 16, 16)
+        success_block_layout.setSpacing(6)
+
+        failed_block_layout = QVBoxLayout(self.failed_block)
+        failed_block_layout.setContentsMargins(16, 16, 16, 16)
+        failed_block_layout.setSpacing(6)
+
+        self.success_title = QLabel("Success")
+        self.success_label = QLabel("0")
+        self.success_title.setObjectName("successTitle")
+        self.success_label.setObjectName("successNumber")
+
+        self.failed_title = QLabel("Failed")
+        self.failed_label = QLabel("0")
+        self.failed_title.setObjectName("failedTitle")
+        self.failed_label.setObjectName("failedNumber")
+
+        success_block_layout.addWidget(self.success_title)
+        success_block_layout.addWidget(self.success_label) 
+
+        failed_block_layout.addWidget(self.failed_title)
+        failed_block_layout.addWidget(self.failed_label)
+
+        results_blocks_layout.addWidget(self.success_block)
+        results_blocks_layout.addWidget(self.failed_block)
+
+        results_card_layout.addLayout(results_blocks_layout)
+
+        layout.addWidget(self.results_card)
         
         # Process log
         layout.addWidget(QLabel("Processing Log"))
