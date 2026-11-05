@@ -1,11 +1,12 @@
 from pathlib import Path
 from ui.widgets.sidebar import Sidebar
+from ui.views.overview_view import OverviewView
 
 from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
     QWidget, QLabel, QPushButton, QLineEdit,
     QFileDialog, QProgressBar, QTextEdit,
-    QFrame,
+    QFrame, QStackedWidget,
     )
 
 class MainWindow(QMainWindow):
@@ -26,8 +27,14 @@ class MainWindow(QMainWindow):
         content_widget = QWidget()
         layout = QVBoxLayout(content_widget)
 
+        self.view_stack = QStackedWidget()
+        layout.addWidget(self.view_stack)
+
+        self.overview_view = OverviewView()
+        self.view_stack.addWidget(self.overview_view)
+
         main_layout.addWidget(content_widget)
-        
+
         layout.setSpacing(16)
         layout.setContentsMargins(20, 20, 20, 20)
         self.input_card = QFrame()
