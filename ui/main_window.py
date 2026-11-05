@@ -1,4 +1,6 @@
 from pathlib import Path
+from ui.widgets.sidebar import Sidebar
+
 from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
     QWidget, QLabel, QPushButton, QLineEdit,
@@ -16,7 +18,16 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        layout = QVBoxLayout(central_widget)
+        main_layout = QHBoxLayout(central_widget)
+
+        self.sidebar = Sidebar()
+        main_layout.addWidget(self.sidebar)
+
+        content_widget = QWidget()
+        layout = QVBoxLayout(content_widget)
+
+        main_layout.addWidget(content_widget)
+        
         layout.setSpacing(16)
         layout.setContentsMargins(20, 20, 20, 20)
         self.input_card = QFrame()
