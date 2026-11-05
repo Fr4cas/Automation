@@ -50,15 +50,22 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.start_button)
 
         # Progress bar
+        self.progress_card = QFrame()
+        self.progress_card.setObjectName("progressCard")
+        progress_card_layout = QVBoxLayout(self.progress_card)
+        progress_card_layout.setContentsMargins(20, 20, 20, 20)
+        progress_card_layout.setSpacing(12)
+
         self.progress_bar = QProgressBar()
         QProgressBar.setRange(self.progress_bar, 0, 100)
 
-        layout.addWidget(self.progress_bar)
+        progress_card_layout.addWidget(self.progress_bar)
 
         # Status label
         self.status_label = QLabel("Waiting to start")
-
-        layout.addWidget(self.status_label)
+        progress_card_layout.addWidget(self.status_label)
+        
+        layout.addWidget(self.progress_card)
 
         results_layout = QHBoxLayout()
 

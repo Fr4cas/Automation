@@ -3,7 +3,8 @@ QMainWindow {
     color: #1E293B;
 }
 
-QFrame#inputCard {
+QFrame#inputCard,
+QFrame#progressCard {
     background-color: #FFFFFF;
     border: 1px solid #E2E8F0;
     border-radius: 10px;
