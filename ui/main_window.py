@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         layout = QVBoxLayout(central_widget)
-        layout.setSpacing(12)
+        layout.setSpacing(16)
         layout.setContentsMargins(20, 20, 20, 20)
         self.input_card = QFrame()
         self.input_card.setObjectName("inputCard")
@@ -87,11 +87,11 @@ class MainWindow(QMainWindow):
         self.failed_block.setObjectName("failedBlock")
 
         success_block_layout = QVBoxLayout(self.success_block)
-        success_block_layout.setContentsMargins(16, 16, 16, 16)
+        success_block_layout.setContentsMargins(12, 12, 12, 12)
         success_block_layout.setSpacing(6)
 
         failed_block_layout = QVBoxLayout(self.failed_block)
-        failed_block_layout.setContentsMargins(16, 16, 16, 16)
+        failed_block_layout.setContentsMargins(12, 12, 12, 12)
         failed_block_layout.setSpacing(6)
 
         self.success_title = QLabel("Success")
