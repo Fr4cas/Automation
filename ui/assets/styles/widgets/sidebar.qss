@@ -1,3 +1,8 @@
+QWidget#sidebar {
+    background-color: #FFFFFF;
+    border-right: 1px solid #E2E8F0;
+}
+
 QPushButton#navButton {
     background-color: transparent;
     color: #64748B;
