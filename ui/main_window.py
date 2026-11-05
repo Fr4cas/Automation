@@ -137,9 +137,11 @@ class MainWindow(QMainWindow):
         # Output and Error folder buttons
         folder_buttons = QHBoxLayout()
         self.output_button = QPushButton("Open Output Folder")
-        self.error_button = QPushButton("Open Error Folder")
-
+        self.output_button.setObjectName("secondaryButton")
         self.output_button.setEnabled(False)
+
+        self.error_button = QPushButton("Open Error Folder")
+        self.error_button.setObjectName("secondaryButton")
         self.error_button.setEnabled(False)
 
         folder_buttons.addWidget(self.output_button)

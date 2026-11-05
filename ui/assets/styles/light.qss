@@ -99,3 +99,23 @@ QTextEdit {
     padding: 12px;
     selection-background-color: #2563EB;
 }
+
+QPushButton#secondaryButton {
+    background-color: #FFFFFF;
+    color: #2563EB;
+    border: 1px solid #BFDBFE;
+    border-radius: 6px;
+    padding: 9px 18px;
+    font-weight: 600;
+}
+
+QPushButton#secondaryButton:hover {
+    background-color: #EFF6FF;
+    border: 1px solid #93C5FD;
+}
+
+QPushButton#secondaryButton:disabled {
+    background-color: #F1F5F9;
+    color: #94A3B8;
+    border: 1px solid #E2E8F0;
+}
