@@ -1,0 +1,20 @@
+QPushButton#navButton {
+    background-color: transparent;
+    color: #64748B;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 500;
+}
+
+QPushButton#navButton:hover {
+    background-color: #F1F5F9;
+    color: #1E293B;
+}
+
+QPushButton#navButton:checked {
+    background-color: #EFF6FF;
+    color: #2563EB;
+    font-weight: 600;
+}
