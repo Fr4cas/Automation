@@ -118,10 +118,21 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.results_card)
         
         # Process log
-        layout.addWidget(QLabel("Processing Log"))
+        self.log_card = QFrame()
+        self.log_card.setObjectName("logCard")
+
+        log_card_layout = QVBoxLayout(self.log_card)
+        log_card_layout.setContentsMargins(20, 20, 20, 20)
+        log_card_layout.setSpacing(12)
+
+        log_card_layout.addWidget(QLabel("Processing Log"))
+
         self.log_output = QTextEdit()
         self.log_output.setReadOnly(True)
-        layout.addWidget(self.log_output)
+
+        log_card_layout.addWidget(self.log_output)
+
+        layout.addWidget(self.log_card)
 
         # Output and Error folder buttons
         folder_buttons = QHBoxLayout()
