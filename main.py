@@ -6,14 +6,27 @@ from pathlib import Path
 def load_stylesheet():
     project_dir = Path(__file__).resolve().parent
     styles_dir = project_dir / "ui" / "assets" / "styles"
+    main_style_path = styles_dir / "main.qss"
 
-    common_style_path = styles_dir / "common.qss"
-    light_style_path = styles_dir / "light.qss"
+    stylesheet = []
 
-    common_style = common_style_path.read_text(encoding="utf-8")
-    light_style = light_style_path.read_text(encoding="utf-8")
+    for line in main_style_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
 
-    return common_style + "\n" + light_style
+        if line.startswith("/* @include ") and line.endswith(" */"):
+            relative_path = line[len("/* @include "):-len(" */")]
+            style_path = styles_dir / relative_path
+
+            if not style_path.is_file():
+                raise FileNotFoundError(
+                    f"Stylesheet not found: {style_path}"
+                )
+
+            stylesheet.append(
+                style_path.read_text(encoding="utf-8")
+            )
+
+    return "\n".join(stylesheet)
 
 def main():
     app = QApplication(sys.argv)

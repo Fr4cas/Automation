@@ -1,0 +1,3 @@
+/* @include common.qss */
+/* @include palettes/light.qss */
+/* @include widgets/sidebar.qss */
