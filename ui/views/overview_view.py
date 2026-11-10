@@ -1,4 +1,5 @@
 from ui.widgets.metric_card import MetricCard
+from ui.widgets.dashboard_panel import DashboardPanel
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
@@ -49,5 +50,17 @@ class OverviewView(QWidget):
         metrics_layout.addWidget(self.successful_card)
         metrics_layout.addWidget(self.failed_card)
         metrics_layout.addWidget(self.duration_card)
-        
+
         layout.addLayout(metrics_layout)
+
+        # Dashboard Panels
+        panels_layout = QHBoxLayout()
+        panels_layout.setSpacing(16)
+
+        self.processing_panel = DashboardPanel("Processing Overview")
+        self.activity_panel = DashboardPanel("Recent Activity")
+
+        panels_layout.addWidget(self.processing_panel)
+        panels_layout.addWidget(self.activity_panel)
+
+        layout.addLayout(panels_layout)
