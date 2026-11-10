@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QFrame, QVBoxLayout, QLabel,
 )
@@ -12,6 +13,7 @@ class DashboardPanel(QFrame):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(12)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.title_label = QLabel(title)
         self.title_label.setObjectName("panelTitle")

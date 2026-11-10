@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QFrame, QVBoxLayout, QLabel,
 )
@@ -7,10 +8,13 @@ class MetricCard(QFrame):
         super().__init__()
 
         self.setObjectName("metricCard")
+        self.setMinimumWidth(150)
+        self.setFixedHeight(150)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 16, 20, 16)
         layout.setSpacing(8)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.title_label = QLabel(title)
         self.value_label = QLabel(value)

@@ -1,0 +1,43 @@
+/* KPI Cards */
+QFrame#metricCard {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+}
+
+QLabel#metricTitle {
+    color: #64748B;
+    font-size: 10pt;
+    font-weight: 500;
+}
+
+QLabel#metricValue {
+    color: #1E293B;
+    font-size: 24pt;
+    font-weight: 600;
+}
+
+/* Dashboard Panels */
+QFrame#dashboardPanel {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+}
+
+QLabel#panelTitle {
+    color: #1E293B;
+    font-size: 12pt;
+    font-weight: 600;
+}
+
+/* Page Header */
+QLabel#pageTitle {
+    color: #1E293B;
+    font-size: 22pt;
+    font-weight: 600;
+}
+
+QLabel#pageSubtitle {
+    color: #64748B;
+    font-size: 10pt;
+}

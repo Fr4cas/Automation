@@ -12,7 +12,7 @@ class OverviewView(QWidget):
         super().__init__()
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(20)
 
         # Header
@@ -22,7 +22,10 @@ class OverviewView(QWidget):
         title_layout.setSpacing(4)
 
         title = QLabel("Welcome back!")
+        title.setObjectName("pageTitle")
+
         subtitle = QLabel("Here's your overview")
+        subtitle.setObjectName("pageSubtitle")
         
         title_layout.addWidget(title)
         title_layout.addWidget(subtitle)
@@ -46,10 +49,10 @@ class OverviewView(QWidget):
         self.failed_card = MetricCard("Failed", "0")
         self.duration_card = MetricCard("Duration", "0s")
 
-        metrics_layout.addWidget(self.scanned_card)
-        metrics_layout.addWidget(self.successful_card)
-        metrics_layout.addWidget(self.failed_card)
-        metrics_layout.addWidget(self.duration_card)
+        metrics_layout.addWidget(self.scanned_card, 1)
+        metrics_layout.addWidget(self.successful_card, 1)
+        metrics_layout.addWidget(self.failed_card, 1)
+        metrics_layout.addWidget(self.duration_card, 1)
 
         layout.addLayout(metrics_layout)
 
