@@ -1,6 +1,8 @@
+from ui.widgets.metric_card import MetricCard
+
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton,
+    QLabel, QPushButton, QFrame,
     )
 
 
@@ -33,3 +35,19 @@ class OverviewView(QWidget):
         header_layout.addWidget(self.start_button)
 
         layout.addLayout(header_layout)
+
+        # KPI Cards
+        metrics_layout = QHBoxLayout()
+        metrics_layout.setSpacing(16)
+
+        self.scanned_card = MetricCard("Scanned", "0")
+        self.successful_card = MetricCard("Successful", "0")
+        self.failed_card = MetricCard("Failed", "0")
+        self.duration_card = MetricCard("Duration", "0s")
+
+        metrics_layout.addWidget(self.scanned_card)
+        metrics_layout.addWidget(self.successful_card)
+        metrics_layout.addWidget(self.failed_card)
+        metrics_layout.addWidget(self.duration_card)
+        
+        layout.addLayout(metrics_layout)
