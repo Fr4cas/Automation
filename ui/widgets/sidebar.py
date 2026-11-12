@@ -51,8 +51,12 @@ class Sidebar(QWidget):
         self.activity_button = QPushButton("Activity Log")
         self.activity_button.setObjectName("navButton")
 
+        self.stamp_button = QPushButton("Stamp")
+        self.stamp_button.setObjectName("navButton")
+
         layout.addWidget(self.analytics_button)
         layout.addWidget(self.activity_button)
+        layout.addWidget(self.stamp_button)
 
         layout.addSpacing(24)
 

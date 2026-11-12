@@ -7,6 +7,7 @@ from ui.views.analytics_view import AnalyticsView
 from ui.views.activity_view import ActivityView
 from ui.views.documents_view import DocumentsView
 from ui.views.settings_view import SettingsView
+from ui.views.stamp_view import StampView
 
 from PySide6.QtCore import QProcess
 from PySide6.QtWidgets import (
@@ -66,6 +67,10 @@ class MainWindow(QMainWindow):
         self.activity_view = ActivityView()
         self.view_stack.addWidget(self.activity_view)
 
+        # Stamp
+        self.stamp_view = StampView()
+        self.view_stack.addWidget(self.stamp_view)
+
         # Documents
         self.documents_view = DocumentsView()
         self.view_stack.addWidget(self.documents_view)
@@ -79,6 +84,7 @@ class MainWindow(QMainWindow):
             self.sidebar.overview_button: self.overview_view,
             self.sidebar.analytics_button: self.analytics_view,
             self.sidebar.activity_button: self.activity_view,
+            self.sidebar.stamp_button: self.stamp_view,
             self.sidebar.documents_button: self.documents_view,
             self.sidebar.settings_button: self.settings_view,
         }
