@@ -32,6 +32,25 @@ class SettingsView(QWidget):
 
         folder_layout.addWidget(folder_title)
 
+        # Stamping folder
+        stamping_label = QLabel("Stamping Folder")
+
+        stamping_row = QHBoxLayout()
+
+        self.stamping_folder = QLineEdit()
+        self.stamping_folder.setPlaceholderText("Select stamping folder...")
+        self.stamping_folder.setReadOnly(True)
+
+        self.stamping_browse_button = QPushButton("Browse")
+        self.stamping_browse_button.clicked.connect(self.select_stamping_folder)
+
+        stamping_row.addWidget(self.stamping_folder)
+        stamping_row.addWidget(self.stamping_browse_button)
+
+        folder_layout.addWidget(stamping_label)
+        folder_layout.addLayout(stamping_row)
+
+        # Input folder
         input_label = QLabel("Input Folder")
 
         input_row = QHBoxLayout()
@@ -89,6 +108,17 @@ class SettingsView(QWidget):
 
         layout.addStretch()
 
+    def select_stamping_folder(self):
+        folder = QFileDialog.getExistingDirectory(
+            self,
+            "Select Stamping Folder"
+        )
+
+        if folder:
+            self.stamping_folder.setText(folder)
+
+    def get_stamping_folder(self):
+        return self.stamping_folder.text()
 
     def select_input_folder(self):
         folder = QFileDialog.getExistingDirectory(
