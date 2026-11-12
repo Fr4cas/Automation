@@ -2,6 +2,7 @@ from ui.widgets.sidebar import Sidebar
 from ui.views.overview_view import OverviewView
 from ui.views.analytics_view import AnalyticsView
 from ui.views.activity_view import ActivityView
+from ui.views.documents_view import DocumentsView
 
 from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
@@ -47,11 +48,16 @@ class MainWindow(QMainWindow):
         self.activity_view = ActivityView()
         self.view_stack.addWidget(self.activity_view)
 
+        # Documents
+        self.documents_view = DocumentsView()
+        self.view_stack.addWidget(self.documents_view)
+
         # Navigation
         navigation = {
             self.sidebar.overview_button: self.overview_view,
             self.sidebar.analytics_button: self.analytics_view,
             self.sidebar.activity_button: self.activity_view,
+            self.sidebar.documents_button: self.documents_view,
         }
 
         for button, view in navigation.items():
