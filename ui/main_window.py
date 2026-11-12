@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
             self.sidebar.analytics_button: self.analytics_view,
             self.sidebar.activity_button: self.activity_view,
             self.sidebar.documents_button: self.documents_view,
-            self.sidebar.documents_button: self.settings_view,
+            self.sidebar.settings_button: self.settings_view,
         }
 
         for button, view in navigation.items():
