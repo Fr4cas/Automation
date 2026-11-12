@@ -6,18 +6,22 @@ import argparse
 import numpy as np
 from paddleocr import PaddleOCR
 
+PROJECT_DIR = os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))
+)
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "input_folder",
     nargs="?",
-    default=os.path.join(os.path.dirname(__file__), "pdfs")
+    default=os.path.join(PROJECT_DIR, "pdfs")
 )
 
 args = parser.parse_args()
 folder = args.input_folder
 
 debug_folder = os.path.join(
-    os.path.dirname(__file__),
+    PROJECT_DIR,
     "debug_logs"
 )
 
@@ -396,7 +400,7 @@ for filename in os.listdir(folder):
 
         # Output the split documents
         output_folder = os.path.join(
-            os.path.dirname(__file__),
+            PROJECT_DIR,
             "split_pdfs",
             os.path.splitext(filename)[0]
         )
