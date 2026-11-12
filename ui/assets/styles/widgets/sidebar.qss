@@ -1,14 +1,15 @@
 QWidget#sidebar {
     background-color: #FFFFFF;
     border-right: 1px solid #E2E8F0;
+    border-radius: 8px
 }
 
 QPushButton#navButton {
     background-color: transparent;
     color: #64748B;
     border: none;
-    border-radius: 8px;
-    padding: 11px 14px;
+    border-radius: 12px;
+    padding: 9px 14px;
     text-align: left;
     font-weight: 500;
 }
@@ -21,5 +22,12 @@ QPushButton#navButton:hover {
 QPushButton#navButton:checked {
     background-color: #EFF6FF;
     color: #2563EB;
+    font-weight: 600;
+}
+
+/* Sidebar Section Labels */
+QLabel#sectionLabel {
+    color: #94A3B8;
+    font-size: 9pt;
     font-weight: 600;
 }

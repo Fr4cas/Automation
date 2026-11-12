@@ -1,3 +1,5 @@
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel,
     QHBoxLayout, QPushButton,
@@ -9,6 +11,7 @@ class Sidebar(QWidget):
         super().__init__()
 
         self.setObjectName("sidebar")
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setFixedWidth(220)
 
         layout = QVBoxLayout(self)
@@ -17,24 +20,22 @@ class Sidebar(QWidget):
 
         logo_layout = QHBoxLayout()
 
-        logo_icon = QLabel("流")
-        logo_name = QLabel("RYŪSEN")
-        
-        brand_text_layout = QVBoxLayout()
-        brand_text_layout.setSpacing(2)
-
-        brand_subtitle = QLabel("Document Processor")
-
-        brand_text_layout.addWidget(logo_name)
-        brand_text_layout.addWidget(brand_subtitle)
+        logo_icon = QLabel()
+        logo_icon.setPixmap(
+            QPixmap("ui/assets/images/logo.png").scaled(
+                QSize(48, 48),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+        )
 
         logo_layout.addWidget(logo_icon)
-        logo_layout.addLayout(brand_text_layout)
 
         layout.addLayout(logo_layout)
         layout.addSpacing(24)
 
         section_label = QLabel("WORKSPACE")
+        section_label.setObjectName("sectionLabel")
         layout.addWidget(section_label)
 
         self.overview_button = QPushButton("Overview")
@@ -56,6 +57,7 @@ class Sidebar(QWidget):
         layout.addSpacing(24)
 
         documents_label = QLabel("DOCUMENTS")
+        documents_label.setObjectName("sectionLabel")
         layout.addWidget(documents_label)
 
         self.documents_button = QPushButton("Processed Documents")
