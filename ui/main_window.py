@@ -1,5 +1,6 @@
 from ui.widgets.sidebar import Sidebar
 from ui.views.overview_view import OverviewView
+from ui.views.analytics_view import AnalyticsView
 
 from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
@@ -36,5 +37,21 @@ class MainWindow(QMainWindow):
         # Overview
         self.overview_view = OverviewView()
         self.view_stack.addWidget(self.overview_view)
+
+        # Analytics
+        self.analytics_view = AnalyticsView()
+        self.view_stack.addWidget(self.analytics_view)
+
+        # Navigation
+        navigation = {
+            self.sidebar.overview_button: self.overview_view,
+            self.sidebar.analytics_button: self.analytics_view,
+        }
+
+        for button, view in navigation.items():
+            button.clicked.connect(
+                lambda checked=False, page=view:
+                    self.view_stack.setCurrentWidget(page)
+            )
 
         main_layout.addWidget(content_widget)
