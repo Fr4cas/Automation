@@ -32,7 +32,6 @@ class OverviewView(QWidget):
 
         self.start_button = QPushButton("Start Processing")
         self.start_button.setObjectName("startButton")
-        self.start_button.setEnabled(False)
 
         header_layout.addLayout(title_layout)
         header_layout.addStretch()

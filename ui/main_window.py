@@ -1,3 +1,6 @@
+import sys
+import os
+
 from ui.widgets.sidebar import Sidebar
 from ui.views.overview_view import OverviewView
 from ui.views.analytics_view import AnalyticsView
@@ -5,6 +8,7 @@ from ui.views.activity_view import ActivityView
 from ui.views.documents_view import DocumentsView
 from ui.views.settings_view import SettingsView
 
+from PySide6.QtCore import QProcess
 from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
     QWidget, QStackedWidget,
@@ -13,6 +17,19 @@ from PySide6.QtWidgets import (
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        # Processing
+        self.process = QProcess(self)
+
+        self.project_dir = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))
+        )
+
+        self.split_script = os.path.join(
+            self.project_dir,
+            "scripts",
+            "split.py"
+        )
 
         self.setWindowTitle("Document Processor")
         self.resize(900, 650)
@@ -72,4 +89,21 @@ class MainWindow(QMainWindow):
                     self.view_stack.setCurrentWidget(page)
             )
 
+        self.overview_view.start_button.clicked.connect(
+            self.start_processing
+        )
+
         main_layout.addWidget(content_widget)
+
+    def start_processing(self):
+        folder = self.settings_view.get_input_folder()
+
+        if not folder or not os.path.isdir(folder):
+            return
+
+        self.process.setWorkingDirectory(self.project_dir)
+
+        self.process.start(
+            sys.executable,
+            [self.split_script, folder]
+        )

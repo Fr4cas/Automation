@@ -98,3 +98,6 @@ class SettingsView(QWidget):
 
         if folder:
             self.input_folder.setText(folder)
+
+    def get_input_folder(self):
+        return self.input_folder.text()
