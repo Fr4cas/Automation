@@ -2,10 +2,19 @@ import os
 import re
 import time
 import pymupdf
+import argparse
 import numpy as np
 from paddleocr import PaddleOCR
 
-folder = os.path.join(os.path.dirname(__file__), "pdfs")
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "input_folder",
+    nargs="?",
+    default=os.path.join(os.path.dirname(__file__), "pdfs")
+)
+
+args = parser.parse_args()
+folder = args.input_folder
 
 debug_folder = os.path.join(
     os.path.dirname(__file__),
