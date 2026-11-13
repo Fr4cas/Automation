@@ -1,4 +1,6 @@
 from PySide6.QtCore import QObject, QThread, Signal, Slot
+from pathlib import Path
+from datetime import datetime
 
 from scripts.stamp import stamp_documents
 
@@ -30,6 +32,7 @@ class StampWorker(QObject):
 
 
 class StampController(QObject):
+    stamping_completed = Signal()
     def __init__(self, stamp_view, settings_view):
         super().__init__()
 
@@ -85,6 +88,8 @@ class StampController(QObject):
         self.stamp_view.set_status(
             f"Successfully stamped {processed} documents."
         )
+        
+        self.stamping_completed.emit()
 
     def on_stamping_error(self, message):
         self.stamp_view.set_status(
@@ -97,3 +102,34 @@ class StampController(QObject):
         self.thread.deleteLater()
         self.thread = None
         self.worker = None
+
+class StampedController(QObject):
+    def __init__(self, stamped_view):
+        super().__init__()
+
+        self.stamped_view = stamped_view
+
+        self.output_folder = (
+            Path(__file__).resolve().parent.parent
+            / "output"
+            / "stamped"
+        )
+
+        self.refresh_files()
+
+    def refresh_files(self):
+        self.output_folder.mkdir(parents=True, exist_ok=True)
+
+        files = []
+
+        for file in sorted(self.output_folder.glob("*.pdf")):
+            modified = datetime.fromtimestamp(
+                file.stat().st_mtime
+            ).strftime("%Y-%m-%d %H:%M")
+
+            files.append({
+                "name": file.name,
+                "modified": modified
+            })
+
+        self.stamped_view.set_files(files)

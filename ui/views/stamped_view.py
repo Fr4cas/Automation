@@ -193,3 +193,22 @@ class StampedView(QWidget):
         content_layout.addWidget(self.preview_panel, 5)
 
         layout.addLayout(content_layout, 1)
+
+    def set_files(self, files):
+        self.file_table.setRowCount(len(files))
+
+        for row, file in enumerate(files):
+            checkbox = QTableWidgetItem()
+            checkbox.setFlags(
+                Qt.ItemIsEnabled | Qt.ItemIsUserCheckable
+            )
+            checkbox.setCheckState(Qt.Unchecked)
+
+            filename = QTableWidgetItem(file["name"])
+            modified = QTableWidgetItem(file["modified"])
+
+            self.file_table.setItem(row, 0, checkbox)
+            self.file_table.setItem(row, 1, filename)
+            self.file_table.setItem(row, 2, modified)
+
+        self.file_count_label.setText(f"{len(files)} files")

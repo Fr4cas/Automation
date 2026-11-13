@@ -10,7 +10,7 @@ from ui.views.documents_view import DocumentsView
 from ui.views.settings_view import SettingsView
 from ui.views.stamp_view import StampView
 
-from controllers.stamp_controller import StampController
+from controllers.stamp_controller import (StampController, StampedController)
 
 from PySide6.QtCore import QProcess
 from PySide6.QtWidgets import (
@@ -91,6 +91,14 @@ class MainWindow(QMainWindow):
         self.stamp_controller = StampController(
             self.stamp_view,
             self.settings_view
+        )
+
+        self.stamped_controller = StampedController(
+            self.stamped_view
+        )
+
+        self.stamp_controller.stamping_completed.connect(
+            self.stamped_controller.refresh_files
         )
 
         # Navigation
