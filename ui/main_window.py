@@ -9,6 +9,8 @@ from ui.views.documents_view import DocumentsView
 from ui.views.settings_view import SettingsView
 from ui.views.stamp_view import StampView
 
+from controllers.stamp_controller import StampController
+
 from PySide6.QtCore import QProcess
 from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
@@ -78,6 +80,12 @@ class MainWindow(QMainWindow):
         # Settings
         self.settings_view = SettingsView()
         self.view_stack.addWidget(self.settings_view)
+
+        # Controllers
+        self.stamp_controller = StampController(
+            self.stamp_view,
+            self.settings_view
+        )
 
         # Navigation
         navigation = {

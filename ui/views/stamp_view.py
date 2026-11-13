@@ -112,3 +112,12 @@ class StampView(QWidget):
         layout.addWidget(processing_section)
 
         layout.addStretch()
+    
+    def get_stamp_settings(self):
+        return {
+            "start_number": self.start_number.value(),
+            "received_date": self.received_date.date().toPython()
+        }
+
+    def set_status(self, message):
+        self.status_label.setText(message)
