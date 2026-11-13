@@ -5,6 +5,12 @@ from datetime import date
 from PIL import Image
 from scripts.stamp_font import generate_stamp
 
+OUTPUT_FOLDER = (
+    Path(__file__).resolve().parent.parent
+    / "output"
+    / "stamped"
+)
+
 def get_pdf_files(folder):
     folder = Path(folder)
 
@@ -127,6 +133,7 @@ def apply_received_stamp(doc, received_date):
     return doc
 
 def stamp_documents(folder, start_number, received_date):
+    OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
     pdf_files = get_pdf_files(folder)
 
     if not pdf_files:
@@ -134,11 +141,11 @@ def stamp_documents(folder, start_number, received_date):
 
     for index, pdf_path in enumerate(pdf_files):
         number = start_number + index
-        new_path = pdf_path.with_name(f"{number:03d}.pdf")
+        new_path = OUTPUT_FOLDER / f"{number:03d}.pdf"
 
         if new_path.exists() and new_path.resolve() != pdf_path.resolve():
             raise FileExistsError(
-                f"Cannot rename {pdf_path.name} to {new_path.name}: "
+                f"Cannot save {pdf_path.name} as {new_path.name}: "
                 "destination already exists."
             )
 
@@ -146,12 +153,10 @@ def stamp_documents(folder, start_number, received_date):
 
     for index, pdf_path in enumerate(pdf_files):
         number = start_number + index
-        new_path = pdf_path.with_name(f"{number:03d}.pdf")
+        new_path = OUTPUT_FOLDER / f"{number:03d}.pdf"
 
         doc = None
-        temp_path = pdf_path.with_name(
-            f".{pdf_path.stem}_temp.pdf"
-        )
+        temp_path = OUTPUT_FOLDER / f".{number:03d}_temp.pdf"
 
         try:
             doc = apply_document_number(pdf_path, number, received_date)
