@@ -5,6 +5,7 @@ from ui.widgets.sidebar import Sidebar
 from ui.views.overview_view import OverviewView
 from ui.views.analytics_view import AnalyticsView
 from ui.views.activity_view import ActivityView
+from ui.views.stamped_view import StampedView
 from ui.views.documents_view import DocumentsView
 from ui.views.settings_view import SettingsView
 from ui.views.stamp_view import StampView
@@ -73,6 +74,10 @@ class MainWindow(QMainWindow):
         self.stamp_view = StampView()
         self.view_stack.addWidget(self.stamp_view)
 
+        # Stamped
+        self.stamped_view = StampedView()
+        self.view_stack.addWidget(self.stamped_view)
+
         # Documents
         self.documents_view = DocumentsView()
         self.view_stack.addWidget(self.documents_view)
@@ -93,6 +98,7 @@ class MainWindow(QMainWindow):
             self.sidebar.analytics_button: self.analytics_view,
             self.sidebar.activity_button: self.activity_view,
             self.sidebar.stamp_button: self.stamp_view,
+            self.sidebar.stamped_button: self.stamped_view,
             self.sidebar.documents_button: self.documents_view,
             self.sidebar.settings_button: self.settings_view,
         }

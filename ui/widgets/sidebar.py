@@ -64,6 +64,10 @@ class Sidebar(QWidget):
         documents_label.setObjectName("sectionLabel")
         layout.addWidget(documents_label)
 
+        self.stamped_button = QPushButton("Stamped Documents")
+        self.stamped_button.setObjectName("navButton")
+        layout.addWidget(self.stamped_button)
+
         self.documents_button = QPushButton("Processed Documents")
         self.documents_button.setObjectName("navButton")
 
