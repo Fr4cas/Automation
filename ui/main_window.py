@@ -36,7 +36,8 @@ class MainWindow(QMainWindow):
         )
 
         self.setWindowTitle("Document Processor")
-        self.resize(900, 650)
+        self.resize(1100, 750)
+        self.setMinimumSize(1000, 650)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)

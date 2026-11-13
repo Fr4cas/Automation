@@ -2,3 +2,4 @@
 /* @include palettes/light.qss */
 /* @include widgets/sidebar.qss */
 /* @include views/overview.qss */
+/* @include views/stamped.qss */

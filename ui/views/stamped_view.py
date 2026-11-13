@@ -21,26 +21,37 @@ class StampedView(QWidget):
         subtitle = QLabel("View, manage, and print stamped PDF files.")
         subtitle.setObjectName("pageSubtitle")
 
-        layout.addWidget(title)
-        layout.addWidget(subtitle)
+        # Page Header
+        header_layout = QHBoxLayout()
 
-        # Toolbar
-        toolbar = QHBoxLayout()
+        # Title and subtitle
+        title_layout = QVBoxLayout()
+        title_layout.setSpacing(4)
 
-        toolbar.addStretch()
+        title_layout.addWidget(title)
+        title_layout.addWidget(subtitle)
 
+        header_layout.addLayout(title_layout)
+        header_layout.addStretch()
+
+        # Action Buttons
         self.open_button = QPushButton("Open")
         self.rename_button = QPushButton("Rename")
         self.delete_button = QPushButton("Delete")
         self.print_button = QPushButton("Print")
 
-        toolbar.addWidget(self.open_button)
-        toolbar.addWidget(self.rename_button)
-        toolbar.addWidget(self.delete_button)
-        toolbar.addSpacing(12)
-        toolbar.addWidget(self.print_button)
+        self.open_button.setObjectName("secondaryButton")
+        self.rename_button.setObjectName("secondaryButton")
+        self.delete_button.setObjectName("secondaryButton")
+        self.print_button.setObjectName("primaryButton")
 
-        layout.addLayout(toolbar)
+        header_layout.addWidget(self.open_button)
+        header_layout.addWidget(self.rename_button)
+        header_layout.addWidget(self.delete_button)
+        header_layout.addSpacing(12)
+        header_layout.addWidget(self.print_button)
+
+        layout.addLayout(header_layout)
 
         # Main Content
         content_layout = QHBoxLayout()
@@ -52,34 +63,25 @@ class StampedView(QWidget):
 
         file_layout = QVBoxLayout(self.file_panel)
 
-        # File List Header
-        file_header = QHBoxLayout()
-
-        self.filename_sort_button = QPushButton("File Name  ▲")
-        self.filename_sort_button.setFlat(True)
-        self.filename_sort_button.setObjectName("sortButton")
-
-        modified_label = QLabel("Modified")
-
-        file_header.addWidget(self.filename_sort_button)
-        file_header.addStretch()
-        file_header.addWidget(modified_label)
-
-        file_layout.addLayout(file_header)
-
         # File Table
         self.file_table = QTableWidget(0, 3)
         self.file_table.setHorizontalHeaderLabels([
             "",
-            "File Name",
+            "File Name ▲",
             "Modified"
         ])
 
-        self.file_table.setColumnWidth(0, 35)
-        self.file_table.setColumnWidth(1, 150)
+        header = self.file_table.horizontalHeader()
 
-        self.file_table.horizontalHeader().setSectionResizeMode(
-            2, QHeaderView.Stretch
+        header.setSectionResizeMode(0, QHeaderView.Fixed)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.Fixed)
+
+        self.file_table.setColumnWidth(0, 30)
+        self.file_table.setColumnWidth(2, 95)
+
+        self.file_table.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarAlwaysOff
         )
 
         self.file_table.verticalHeader().setVisible(False)
@@ -113,7 +115,7 @@ class StampedView(QWidget):
 
         # PDF Viewer Toolbar
         viewer_toolbar = QHBoxLayout()
-        viewer_toolbar.setSpacing(6)
+        viewer_toolbar.setSpacing(8)
 
         # Document information
         self.pdf_icon = QLabel("PDF")
@@ -122,9 +124,11 @@ class StampedView(QWidget):
         file_info_layout.setSpacing(0)
 
         self.preview_filename = QLabel("No document selected")
-        self.preview_filename.setObjectName("panelTitle")
+        self.preview_filename.setObjectName("previewFilename")
+        self.preview_filename.setMinimumWidth(155)
 
         self.file_info_label = QLabel("0 pages  |  0 MB")
+        self.file_info_label.setMinimumWidth(155)
 
         file_info_layout.addWidget(self.preview_filename)
         file_info_layout.addWidget(self.file_info_label)
@@ -139,6 +143,9 @@ class StampedView(QWidget):
         self.page_label = QLabel("0 / 0")
         self.next_page_button = QPushButton("›")
 
+        self.previous_page_button.setFixedSize(40, 34)
+        self.next_page_button.setFixedSize(40, 34)
+
         viewer_toolbar.addWidget(self.previous_page_button)
         viewer_toolbar.addWidget(self.page_label)
         viewer_toolbar.addWidget(self.next_page_button)
@@ -148,13 +155,27 @@ class StampedView(QWidget):
         self.zoom_label = QLabel("100%")
         self.zoom_in_button = QPushButton("+")
 
+        self.zoom_out_button.setFixedSize(40, 34)
+        self.zoom_in_button.setFixedSize(40, 34)
+
         viewer_toolbar.addWidget(self.zoom_out_button)
         viewer_toolbar.addWidget(self.zoom_label)
         viewer_toolbar.addWidget(self.zoom_in_button)
 
         # Fullscreen
         self.fullscreen_button = QPushButton("⛶")
+        self.fullscreen_button.setFixedSize(40, 34)
         viewer_toolbar.addWidget(self.fullscreen_button)
+
+        for button in (
+            self.previous_page_button,
+            self.next_page_button,
+            self.zoom_out_button,
+            self.zoom_in_button,
+            self.fullscreen_button
+        ):
+            button.setStyleSheet("padding: 0px;")
+            button.setObjectName("viewerButton")
 
         preview_layout.addLayout(viewer_toolbar)
 
@@ -165,9 +186,10 @@ class StampedView(QWidget):
 
         preview_layout.addWidget(self.pdf_preview)
 
-        content_layout.addWidget(self.file_panel, 2)
-        content_layout.addWidget(self.preview_panel, 3)
+        self.file_panel.setMinimumWidth(320)
+        self.preview_panel.setMinimumWidth(400)
 
-        layout.addLayout(content_layout)
+        content_layout.addWidget(self.file_panel, 3)
+        content_layout.addWidget(self.preview_panel, 5)
 
-        layout.addStretch()
+        layout.addLayout(content_layout, 1)

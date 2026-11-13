@@ -1,0 +1,90 @@
+/* Stamped Documents Panels */
+QFrame#panel {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+}
+
+/* PDF Preview */
+QFrame#pdfPreview {
+    background-color: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+}
+
+/* Panel Titles */
+QLabel#previewFilename {
+    color: #334155;
+    font-size: 8pt;
+    font-weight: 600;
+}
+
+/* Stamped Documents File Table */
+QTableWidget {
+    background-color: #FFFFFF;
+    alternate-background-color: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    color: #1E293B;
+    selection-background-color: #DBEAFE;
+    selection-color: #1E293B;
+    outline: none;
+}
+
+QTableWidget::item {
+    padding: 6px;
+    border-bottom: 1px solid #E2E8F0;
+}
+
+QHeaderView::section {
+    background-color: #FFFFFF;
+    color: #475569;
+    border: none;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 8px;
+    font-weight: 600;
+}
+
+/* Stamped Documents Action Buttons */
+QPushButton#secondaryButton {
+    background-color: #FFFFFF;
+    color: #1E293B;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    padding: 8px 16px;
+}
+
+QPushButton#secondaryButton:hover {
+    background-color: #F1F5F9;
+    border-color: #94A3B8;
+}
+
+QPushButton#primaryButton {
+    background-color: #155FA0;
+    color: #FFFFFF;
+    border: 1px solid #155FA0;
+    border-radius: 6px;
+    padding: 8px 20px;
+}
+
+QPushButton#primaryButton:hover {
+    background-color: #124F85;
+}
+
+QTableWidget::item:selected {
+    background-color: #DBEAFE;
+    color: #1E293B;
+}
+
+/* PDF Viewer Controls */
+QPushButton#viewerButton {
+    background-color: #FFFFFF;
+    color: #334155;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    font-size: 10pt;
+}
+
+QPushButton#viewerButton:hover {
+    background-color: #E2E8F0;
+}
