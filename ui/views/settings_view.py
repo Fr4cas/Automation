@@ -1,3 +1,4 @@
+import os
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QPushButton,
@@ -8,6 +9,17 @@ from PySide6.QtWidgets import (
 class SettingsView(QWidget):
     def __init__(self):
         super().__init__()
+
+        # default scan folder
+        self.project_dir = os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        )
+
+        self.default_scan_folder = os.path.join(
+            self.project_dir,
+            "output",
+            "stamped"
+        )
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -50,23 +62,24 @@ class SettingsView(QWidget):
         folder_layout.addWidget(stamping_label)
         folder_layout.addLayout(stamping_row)
 
-        # Input folder
-        input_label = QLabel("Input Folder")
+        # Scan folder
+        scan_label = QLabel("Scan Folder")
 
-        input_row = QHBoxLayout()
+        scan_row = QHBoxLayout()
 
-        self.input_folder = QLineEdit()
-        self.input_folder.setPlaceholderText("Select input folder...")
-        self.input_folder.setReadOnly(True)
+        self.scan_folder = QLineEdit()
+        self.scan_folder.setPlaceholderText("Select scan folder...")
+        self.scan_folder.setReadOnly(True)
+        self.scan_folder.setText(self.default_scan_folder)
 
         self.browse_button = QPushButton("Browse")
-        self.browse_button.clicked.connect(self.select_input_folder)
+        self.browse_button.clicked.connect(self.select_scan_folder)
 
-        input_row.addWidget(self.input_folder)
-        input_row.addWidget(self.browse_button)
+        scan_row.addWidget(self.scan_folder)
+        scan_row.addWidget(self.browse_button)
 
-        folder_layout.addWidget(input_label)
-        folder_layout.addLayout(input_row)
+        folder_layout.addWidget(scan_label)
+        folder_layout.addLayout(scan_row)
 
         layout.addWidget(folder_section)
 
@@ -120,14 +133,14 @@ class SettingsView(QWidget):
     def get_stamping_folder(self):
         return self.stamping_folder.text()
 
-    def select_input_folder(self):
+    def select_scan_folder(self):
         folder = QFileDialog.getExistingDirectory(
             self,
-            "Select Input Folder"
+            "Select Scan Folder"
         )
 
         if folder:
-            self.input_folder.setText(folder)
+            self.scan_folder.setText(folder)
 
-    def get_input_folder(self):
-        return self.input_folder.text()
+    def get_scan_folder(self):
+        return self.scan_folder.text()

@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(content_widget)
 
     def start_processing(self):
-        folder = self.settings_view.get_input_folder()
+        folder = self.settings_view.get_scan_folder()
 
         if not folder or not os.path.isdir(folder):
             return
