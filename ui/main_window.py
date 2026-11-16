@@ -6,7 +6,7 @@ from ui.views.overview_view import OverviewView
 from ui.views.analytics_view import AnalyticsView
 from ui.views.activity_view import ActivityView
 from ui.views.stamped_view import StampedView
-from ui.views.documents_view import DocumentsView
+from ui.views.documents.documents_view import DocumentsView
 from ui.views.settings_view import SettingsView
 from ui.views.stamp_view import StampView
 
