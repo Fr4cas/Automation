@@ -45,17 +45,9 @@ class Sidebar(QWidget):
 
         layout.addWidget(self.overview_button)
 
-        self.analytics_button = QPushButton("Analytics")
-        self.analytics_button.setObjectName("navButton")
-
-        self.activity_button = QPushButton("Activity Log")
-        self.activity_button.setObjectName("navButton")
-
         self.stamp_button = QPushButton("Stamp")
         self.stamp_button.setObjectName("navButton")
 
-        layout.addWidget(self.analytics_button)
-        layout.addWidget(self.activity_button)
         layout.addWidget(self.stamp_button)
 
         layout.addSpacing(24)
@@ -72,6 +64,19 @@ class Sidebar(QWidget):
         self.documents_button.setObjectName("navButton")
 
         layout.addWidget(self.documents_button)
+
+        # SYSTEM
+        system_label = QLabel("SYSTEM")
+        system_label.setObjectName("sectionLabel")
+        layout.addWidget(system_label)
+
+        self.analytics_button = QPushButton("Analytics")
+        self.analytics_button.setObjectName("navButton")
+        layout.addWidget(self.analytics_button)
+
+        self.activity_button = QPushButton("Activity Log")
+        self.activity_button.setObjectName("navButton")
+        layout.addWidget(self.activity_button)
 
         layout.addStretch()
 
