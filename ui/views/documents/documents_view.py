@@ -1,5 +1,8 @@
+from ui.views.documents.tabs.metadata_tab import MetadataTab
+from ui.views.documents.tabs.rename_tab import RenameTab
+
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel,
+    QWidget, QVBoxLayout, QTabWidget,
 )
 
 
@@ -11,12 +14,12 @@ class DocumentsView(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(8)
 
-        title = QLabel("Processed Documents")
-        title.setObjectName("pageTitle")
+        self.tabs = QTabWidget()
 
-        subtitle = QLabel("Review your processed documents.")
-        subtitle.setObjectName("pageSubtitle")
+        self.metadata_tab = MetadataTab()
+        self.rename_tab = RenameTab()
 
-        layout.addWidget(title)
-        layout.addWidget(subtitle)
-        layout.addStretch()
+        self.tabs.addTab(self.metadata_tab, "Metadata")
+        self.tabs.addTab(self.rename_tab, "Rename")
+
+        layout.addWidget(self.tabs)
