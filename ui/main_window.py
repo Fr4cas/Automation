@@ -29,10 +29,10 @@ class MainWindow(QMainWindow):
             os.path.dirname(os.path.abspath(__file__))
         )
 
-        self.split_script = os.path.join(
+        self.scan_script = os.path.join(
             self.project_dir,
             "scripts",
-            "split.py"
+            "scan.py"
         )
 
         self.setWindowTitle("Document Processor")
@@ -125,14 +125,20 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(content_widget)
 
     def start_processing(self):
-        folder = self.settings_view.get_scan_folder()
+        input_folder = self.settings_view.get_scan_folder()
 
-        if not folder or not os.path.isdir(folder):
+        if not input_folder or not os.path.isdir(input_folder):
             return
+
+        output_folder = os.path.join(
+            self.project_dir,
+            "output",
+            "extracted_text"
+        )
 
         self.process.setWorkingDirectory(self.project_dir)
 
         self.process.start(
             sys.executable,
-            [self.split_script, folder]
+            [self.scan_script, input_folder, output_folder]
         )

@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import numpy as np
 import pymupdf
@@ -6,8 +7,10 @@ from paddleocr import PaddleOCR
 from opencc import OpenCC
 
 # Input & Output folders
-folder = os.path.join(os.path.dirname(__file__), "split_pdfs")
-output_folder = os.path.join(os.path.dirname(__file__), "extracted_text")
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+folder = os.path.join(project_dir, "output", "stamped")
+output_folder = os.path.join(project_dir, "output", "extracted_text")
+
 os.makedirs(output_folder, exist_ok=True)
 
 # PaddleOCR init
@@ -99,19 +102,20 @@ def extract_pdf_text(file_path):
 
     return "\n\n".join(all_pages)
 
-def process_pdf_folder():
+def process_pdf_folder(input_folder, output_folder):
+    os.makedirs(output_folder, exist_ok=True)
     pdf_files = sorted(
         filename 
-        for filename in os.listdir(folder)
+        for filename in os.listdir(input_folder)
         if filename.lower().endswith(".pdf") 
     )
 
     if not pdf_files:
-        print(f"no PDF files found in: {folder}")
+        print(f"no PDF files found in: {input_folder}")
         return
 
     for filename in pdf_files:
-        pdf_path = os.path.join(folder, filename)
+        pdf_path = os.path.join(input_folder, filename)
 
         try:
             print(f"Processing: {filename}")
@@ -131,4 +135,7 @@ def process_pdf_folder():
 
 
 if __name__ == "__main__":
-    process_pdf_folder()
+    input_folder = sys.argv[1] if len(sys.argv) > 1 else folder
+    output_path = sys.argv[2] if len(sys.argv) > 2 else output_folder
+
+    process_pdf_folder(input_folder, output_path)
