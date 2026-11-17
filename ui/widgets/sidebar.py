@@ -2,7 +2,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel,
-    QHBoxLayout, QPushButton,
+    QHBoxLayout, QPushButton, QButtonGroup,
 )
 
 
@@ -17,6 +17,9 @@ class Sidebar(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 20, 16, 20)
         layout.setSpacing(12)
+
+        self._navigation_group = QButtonGroup(self)
+        self._navigation_group.setExclusive(True)
 
         logo_layout = QHBoxLayout()
 
@@ -38,15 +41,12 @@ class Sidebar(QWidget):
         section_label.setObjectName("sectionLabel")
         layout.addWidget(section_label)
 
-        self.overview_button = QPushButton("Overview")
-        self.overview_button.setObjectName("navButton")
-        self.overview_button.setCheckable(True)
+        self.overview_button = self._create_nav_button("Overview")
         self.overview_button.setChecked(True)
 
         layout.addWidget(self.overview_button)
 
-        self.stamp_button = QPushButton("Stamp")
-        self.stamp_button.setObjectName("navButton")
+        self.stamp_button = self._create_nav_button("Stamp")
 
         layout.addWidget(self.stamp_button)
 
@@ -56,12 +56,10 @@ class Sidebar(QWidget):
         documents_label.setObjectName("sectionLabel")
         layout.addWidget(documents_label)
 
-        self.stamped_button = QPushButton("Stamped Documents")
-        self.stamped_button.setObjectName("navButton")
+        self.stamped_button = self._create_nav_button("Stamped Documents")
         layout.addWidget(self.stamped_button)
 
-        self.documents_button = QPushButton("Processed Documents")
-        self.documents_button.setObjectName("navButton")
+        self.documents_button = self._create_nav_button("Processed Documents")
 
         layout.addWidget(self.documents_button)
 
@@ -70,17 +68,21 @@ class Sidebar(QWidget):
         system_label.setObjectName("sectionLabel")
         layout.addWidget(system_label)
 
-        self.analytics_button = QPushButton("Analytics")
-        self.analytics_button.setObjectName("navButton")
+        self.analytics_button = self._create_nav_button("Analytics")
         layout.addWidget(self.analytics_button)
 
-        self.activity_button = QPushButton("Activity Log")
-        self.activity_button.setObjectName("navButton")
+        self.activity_button = self._create_nav_button("Activity Log")
         layout.addWidget(self.activity_button)
 
         layout.addStretch()
 
-        self.settings_button = QPushButton("Settings")
-        self.settings_button.setObjectName("navButton")
+        self.settings_button = self._create_nav_button("Settings")
 
         layout.addWidget(self.settings_button)
+
+    def _create_nav_button(self, label):
+        button = QPushButton(label)
+        button.setObjectName("navButton")
+        button.setCheckable(True)
+        self._navigation_group.addButton(button)
+        return button
