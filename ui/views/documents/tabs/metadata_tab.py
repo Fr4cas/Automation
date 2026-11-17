@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QTableWidget, QHeaderView, QPushButton,
-    QLabel,
+    QLabel, QFrame,
 )
 
 
@@ -16,12 +16,38 @@ class MetadataTab(QWidget):
         self.batch_bar = QHBoxLayout()
         layout.addLayout(self.batch_bar)
 
-        self.batch_title = QLabel("Current Batch (Temporary)")
-        self.batch_bar.addWidget(self.batch_title)
+        self.batch_info = QVBoxLayout()
+        self.batch_info.setSpacing(2)
+        self.batch_bar.addLayout(self.batch_info, 1)
 
-        self.batch_bar.addStretch()
+        self.batch_title = QLabel("Current Batch (Temporary)")
+        self.batch_info.addWidget(self.batch_title)
+
+        self.batch_subtitle = QLabel("Process and manage documents in the temporary workspace.")
+        self.batch_info.addWidget(self.batch_subtitle)
+        self.batch_subtitle.setMinimumWidth(400)
+
         self.document_count_label = QLabel("0 documents")
         self.batch_bar.addWidget(self.document_count_label)
+
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.VLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
+        self.batch_bar.addWidget(separator)
+
+        self.pending_export_label = QLabel("0 Pending Export")
+        self.batch_bar.addWidget(self.pending_export_label)
+
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.VLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
+        self.batch_bar.addWidget(separator)
+
+        self.open_folder_button = QPushButton("Open Batch Folder")
+        self.batch_bar.addWidget(self.open_folder_button)
+
+        self.open_file_button = QPushButton("Open File")
+        self.batch_bar.addWidget(self.open_file_button)
 
         # Toolbar section
         self.toolbar = QHBoxLayout()
