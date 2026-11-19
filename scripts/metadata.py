@@ -1,10 +1,17 @@
 import os
 import re
+import sys
+
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
 from sheets import send_metadata
 
-folder = os.path.join(os.path.dirname(__file__), "extracted_text")
 
-debug_folder = os.path.join(os.path.dirname(__file__), "debug_logs")
+folder = os.path.join(PROJECT_DIR, "output", "extracted_text")
+
+debug_folder = os.path.join(PROJECT_DIR, "debug_logs")
 os.makedirs(debug_folder, exist_ok=True)
 
 output_file = os.path.join(
@@ -12,9 +19,11 @@ output_file = os.path.join(
     "metadata_debug_results.txt"
 )
 
+
 def read_text_file(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read()
+
 
 def extract_receipt_number(text):
     match = re.search(
@@ -43,6 +52,7 @@ def extract_receipt_date(text):
 
     return ", ".join(dates)
 
+
 def extract_issue_date(text):
     match = re.search(
         r"發文日期[:：]?\s*中華民[國园]\s*(\d{2,3})年\s*(\d{1,2})月\s*(\d{1,2})日",
@@ -58,6 +68,7 @@ def extract_issue_date(text):
 
     return ""
 
+
 def extract_reference_number(text):
     match = re.search(
         r"發文字號[:：]?\s*([^\s\n]+)",
@@ -69,6 +80,7 @@ def extract_reference_number(text):
 
     return ""
 
+
 def extract_issuing_authority(text):
     match = re.search(
         r"([^\s\n\r]{2,}?)(?=\s*(及)?書?函)",
@@ -79,6 +91,7 @@ def extract_issuing_authority(text):
         return match.group(1)
 
     return ""
+
 
 def extract_document_type(text):
     match = re.search(
@@ -98,11 +111,12 @@ def extract_document_type(text):
 
     if match:
         copy_content = match.group(1)
-    
+
         if re.search(r"宏昇營造|新雄營造", copy_content):
             return "副本"
-    
+
     return "正本"
+
 
 def extract_subject(text):
     clean_text = re.sub(r"\s", "", text)
@@ -110,7 +124,7 @@ def extract_subject(text):
     end_keywords = [
         "請查照", "敬請查照", "惠請查照",
         "請備查", "敬請備查", "惠請備查",
-        "敬請核示","鑒核", "鑑定", "鑑核",
+        "敬請核示", "鑒核", "鑑定", "鑑核",
         "請鑒核", "請參辦", "請參核",
         "請鑑定", "請檢送", "審定。",
         "請依說明二辦理", "建請同意核定"
@@ -130,20 +144,14 @@ def extract_subject(text):
 
     return ""
 
+
 def extract_explanation(text):
     explanation_start = re.search(r"說明[:：]", text)
 
-    if not explanation_start: 
+    if not explanation_start:
         return ""
 
     explanation_text = text[explanation_start.end():]
-
-    explanation_text = re.split(
-        r"^\s*正本[:：]",
-        explanation_text,
-        maxsplit=1,
-        flags=re.MULTILINE
-    )[0]
 
     explanation_text = re.split(
         r"^\s*正本[:：]",
@@ -184,6 +192,7 @@ def extract_attachment(text):
 
     return ""
 
+
 if __name__ == "__main__":
     with open(output_file, "w", encoding="utf-8") as file:
         file.write("Metadata Extraction Results\n")
@@ -195,7 +204,7 @@ if __name__ == "__main__":
 
     if not txt_files:
         print(f"No text files found in {folder}")
-    
+
     for filename in txt_files:
         file_path = os.path.join(folder, filename)
 
