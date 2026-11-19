@@ -9,12 +9,13 @@ class StampWorker(QObject):
     finished = Signal(int)
     error = Signal(str)
 
-    def __init__(self, folder, start_number, received_date):
+    def __init__(self, folder, start_number, received_date, stamp_settings):
         super().__init__()
 
         self.folder = folder
         self.start_number = start_number
         self.received_date = received_date
+        self.stamp_settings = stamp_settings
 
     @Slot()
     def run(self):
@@ -22,7 +23,8 @@ class StampWorker(QObject):
             processed = stamp_documents(
                 self.folder,
                 self.start_number,
-                self.received_date
+                self.received_date,
+                self.stamp_settings
             )
 
             self.finished.emit(processed)
@@ -63,7 +65,8 @@ class StampController(QObject):
         self.worker = StampWorker(
             folder,
             settings["start_number"],
-            settings["received_date"]
+            settings["received_date"],
+            settings["stamp_settings"]
         )
 
         self.worker.moveToThread(self.thread)

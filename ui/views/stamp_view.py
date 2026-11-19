@@ -1,10 +1,84 @@
 from PySide6.QtCore import QDate, Qt
+from PySide6.QtGui import QFont, QFontMetrics, QResizeEvent
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QSpinBox, QDateEdit,
-    QPushButton, QFrame, QSizePolicy,
+    QLabel, QSpinBox, QDateEdit, QDialog,
+    QFormLayout, QDialogButtonBox, QPushButton,
+    QFrame, QSizePolicy,
 )
+
+
+class PositionPreview(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.setObjectName("previewPaper")
+
+        self.number_stamp = QLabel("2300A-YYMMDD-001", self)
+        self.number_stamp.setObjectName("previewNumber")
+        self.number_stamp.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.received_stamp = QLabel("收 文\n2026/01/01", self)
+        self.received_stamp.setObjectName("previewReceived")
+        self.received_stamp.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.number_placement = {"x": 90, "y": 1, "scale": 80}
+        self.received_placement = {"x": 90, "y": 95, "scale": 100}
+
+    def set_placements(self, number_placement, received_placement):
+        self.number_placement = number_placement
+        self.received_placement = received_placement
+        self.update_stamp_geometry()
+
+    def resizeEvent(self, event: QResizeEvent):
+        super().resizeEvent(event)
+        self.update_stamp_geometry()
+
+    def update_stamp_geometry(self):
+        paper = self.rect().adjusted(10, 8, -10, -8)
+        if paper.width() <= 0 or paper.height() <= 0:
+            return
+
+        self._place_stamp(
+            self.number_stamp, self.number_placement,
+            paper, 0.34, 18
+        )
+        self._fit_number_text()
+        self._place_stamp(
+            self.received_stamp, self.received_placement,
+            paper, 0.48, 34
+        )
+
+    def _fit_number_text(self):
+        font = self.number_stamp.font()
+        font.setLetterSpacing(QFont.SpacingType.PercentageSpacing, 100)
+        text_width = QFontMetrics(font).horizontalAdvance(
+            self.number_stamp.text()
+        )
+        available_width = max(1, self.number_stamp.width() - 12)
+
+        if text_width > available_width:
+            font.setLetterSpacing(
+                QFont.SpacingType.PercentageSpacing,
+                max(1, int(available_width * 100 / text_width))
+            )
+        self.number_stamp.setFont(font)
+
+    @staticmethod
+    def _place_stamp(label, placement, paper, base_width_ratio, base_height):
+        scale = placement["scale"] / 100
+        width = min(
+            paper.width(),
+            max(1, round(paper.width() * base_width_ratio * scale))
+        )
+        height = min(paper.height(), max(1, round(base_height * scale)))
+        x = paper.x() + round(
+            max(0, paper.width() - width) * placement["x"] / 100
+        )
+        y = paper.y() + round(
+            max(0, paper.height() - height) * placement["y"] / 100
+        )
+        label.setGeometry(x, y, width, height)
+        label.raise_()
 
 
 class StampView(QWidget):
@@ -12,6 +86,8 @@ class StampView(QWidget):
         super().__init__()
 
         self.setObjectName("stampPage")
+        self.number_placement = {"x": 90, "y": 1, "scale": 80}
+        self.received_placement = {"x": 90, "y": 95, "scale": 100}
 
         # Main Layout
         layout = QVBoxLayout(self)
@@ -122,10 +198,12 @@ class StampView(QWidget):
         number_info.addWidget(number_label)
         number_info.addWidget(number_description)
 
-        self.number_position_label = QLabel("First Page · Top")
+        self.number_position_label = QLabel(
+            "Across 90% · Down 1% · Size 80%"
+        )
         self.number_position_label.setObjectName("positionValue")
 
-        self.number_change_button = QPushButton("Change Position")
+        self.number_change_button = QPushButton("Position & Size")
         self.number_change_button.setObjectName("numberChangeButton")
 
         number_position.addLayout(number_info)
@@ -149,10 +227,12 @@ class StampView(QWidget):
         received_info.addWidget(received_label)
         received_info.addWidget(received_description)
 
-        self.received_position_label = QLabel("Last Page · Bottom")
+        self.received_position_label = QLabel(
+            "Across 90% · Down 95% · Size 100%"
+        )
         self.received_position_label.setObjectName("positionValue")
 
-        self.received_change_button = QPushButton("Change Position")
+        self.received_change_button = QPushButton("Position & Size")
         self.received_change_button.setObjectName("receivedChangeButton")
 
         received_position.addLayout(received_info)
@@ -177,8 +257,7 @@ class StampView(QWidget):
         preview_layout.addWidget(preview_title)
 
         # Miniature document
-        self.position_preview = QFrame()
-        self.position_preview.setObjectName("previewPaper")
+        self.position_preview = PositionPreview()
         self.position_preview.setMinimumHeight(145)
         self.position_preview.setSizePolicy(
             QSizePolicy.Policy.Expanding,
@@ -189,15 +268,6 @@ class StampView(QWidget):
         paper_layout.setContentsMargins(12, 8, 12, 8)
         paper_layout.setSpacing(5)
 
-        self.preview_number = QLabel()
-        self.preview_number.setObjectName("previewNumber")
-        self.preview_number.setAlignment(
-            Qt.AlignmentFlag.AlignRight
-        )
-
-        paper_layout.addWidget(self.preview_number)
-
-        # Simulated document lines
         for width in (90, 75, 85, 65, 80, 55):
             line = QFrame()
             line.setObjectName("previewLine")
@@ -205,17 +275,6 @@ class StampView(QWidget):
             paper_layout.addWidget(line)
 
         paper_layout.addStretch()
-
-        self.preview_received = QLabel()
-        self.preview_received.setObjectName("previewReceived")
-        self.preview_received.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )
-
-        paper_layout.addWidget(
-            self.preview_received,
-            alignment=Qt.AlignmentFlag.AlignRight
-        )
 
         preview_layout.addWidget(self.position_preview)
 
@@ -268,6 +327,21 @@ class StampView(QWidget):
             self.update_position_preview
         )
 
+        self.number_change_button.clicked.connect(
+            lambda: self.edit_stamp_placement(
+                "Document Number",
+                self.number_placement,
+                self.number_position_label
+            )
+        )
+        self.received_change_button.clicked.connect(
+            lambda: self.edit_stamp_placement(
+                "Received Stamp",
+                self.received_placement,
+                self.received_position_label
+            )
+        )
+
         self.update_position_preview()
 
     # =====================================
@@ -299,14 +373,70 @@ class StampView(QWidget):
     def update_position_preview(self):
         number = self.start_number.value()
 
-        received_date = self.received_date.date().toString(
-            "yyyy/MM/dd"
+        stamp_date = self.received_date.date()
+        date_code = stamp_date.toString("yyMMdd")
+        received_date = stamp_date.toString("yyyy/MM/dd")
+
+        self.position_preview.number_stamp.setText(
+            f"2300A-{date_code}-{number:03d}"
+        )
+        self.position_preview.received_stamp.setText(
+            f"收 文\n{received_date}"
+        )
+        self.position_preview.set_placements(
+            self.number_placement,
+            self.received_placement
         )
 
-        self.preview_number.setText(f"No. {number:03d}")
+    def edit_stamp_placement(
+        self, title, placement, position_label
+    ):
+        dialog = QDialog(self)
+        dialog.setWindowTitle(f"{title} Position and Size")
 
-        self.preview_received.setText(
-            f"收 文\n{received_date}"
+        form = QFormLayout(dialog)
+        horizontal = QSpinBox()
+        horizontal.setRange(0, 100)
+        horizontal.setSuffix("%")
+        horizontal.setValue(placement["x"])
+
+        vertical = QSpinBox()
+        vertical.setRange(0, 100)
+        vertical.setSuffix("%")
+        vertical.setValue(placement["y"])
+
+        scale = QSpinBox()
+        scale.setRange(10, 300)
+        scale.setSuffix("%")
+        scale.setValue(placement["scale"])
+
+        form.addRow("Horizontal position", horizontal)
+        form.addRow("Vertical position", vertical)
+        form.addRow("Size", scale)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok
+            | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        form.addRow(buttons)
+
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        placement.update({
+            "x": horizontal.value(),
+            "y": vertical.value(),
+            "scale": scale.value(),
+        })
+        self.position_preview.set_placements(
+            self.number_placement,
+            self.received_placement
+        )
+        position_label.setText(
+            f"Across {placement['x']}% · Down {placement['y']}% "
+            f"· Size {placement['scale']}%"
         )
 
     # =====================================
@@ -317,6 +447,10 @@ class StampView(QWidget):
         return {
             "start_number": self.start_number.value(),
             "received_date": self.received_date.date().toPython(),
+            "stamp_settings": {
+                "document_number": dict(self.number_placement),
+                "received_stamp": dict(self.received_placement),
+            },
         }
 
     def set_status(self, message):

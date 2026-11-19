@@ -11,6 +11,36 @@ OUTPUT_FOLDER = (
     / "stamped"
 )
 
+DEFAULT_STAMP_SETTINGS = {
+    "document_number": {"x": 90, "y": 1, "scale": 80},
+    "received_stamp": {"x": 90, "y": 95, "scale": 100},
+}
+
+
+def get_stamp_rect(page_rect, base_width, base_height, placement):
+    x_percent = placement.get("x", 50)
+    y_percent = placement.get("y", 50)
+    scale = placement.get("scale", 100)
+
+    if not all(
+        isinstance(value, (int, float)) and 0 <= value <= 100
+        for value in (x_percent, y_percent)
+    ):
+        raise ValueError("Stamp position values must be between 0 and 100.")
+
+    if not isinstance(scale, (int, float)) or not 10 <= scale <= 300:
+        raise ValueError("Stamp scale must be between 10 and 300 percent.")
+
+    width = base_width * scale / 100
+    height = base_height * scale / 100
+    available_x = max(0, page_rect.width - width)
+    available_y = max(0, page_rect.height - height)
+    x = page_rect.x0 + available_x * x_percent / 100
+    y = page_rect.y0 + available_y * y_percent / 100
+
+    return pymupdf.Rect(x, y, x + width, y + height), scale
+
+
 def get_pdf_files(folder):
     folder = Path(folder)
 
@@ -21,7 +51,9 @@ def get_pdf_files(folder):
 
     return pdf_files
 
-def apply_document_number(pdf_path, number, received_date):
+def apply_document_number(
+    pdf_path, number, received_date, placement=None
+):
     doc = pymupdf.open(pdf_path)
     page = doc[0]
 
@@ -39,20 +71,13 @@ def apply_document_number(pdf_path, number, received_date):
         seed=number
     )
 
-    # Set the stamp dimensions and position
-    stamp_height = 18
     image = Image.open(stamp_image_path)
-
-    stamp_width = stamp_height * image.width / image.height
-
-    x = (page.rect.width - stamp_width) / 2
-    y = 22
-
-    stamp_rect = pymupdf.Rect(
-        x,
-        y,
-        x + stamp_width,
-        y + stamp_height
+    stamp_height = 18
+    stamp_rect, _ = get_stamp_rect(
+        page.rect,
+        stamp_height * image.width / image.height,
+        stamp_height,
+        placement or DEFAULT_STAMP_SETTINGS["document_number"],
     )
 
     page.insert_image(
@@ -66,7 +91,7 @@ def apply_document_number(pdf_path, number, received_date):
     return doc
 
 
-def apply_received_stamp(doc, received_date):
+def apply_received_stamp(doc, received_date, placement=None):
     page = doc[-1]
 
     # Load received stamp template
@@ -76,17 +101,13 @@ def apply_received_stamp(doc, received_date):
         / "received_stamp_template.png"
     )
 
-    # Stamp dimensions
     stamp_width = 130
     stamp_height = 72
-
-    x = (page.rect.width - stamp_width) / 2
-    y = page.rect.height - stamp_height - 40
-
-    stamp_rect = pymupdf.Rect(
-        x, y,
-        x + stamp_width,
-        y + stamp_height
+    stamp_rect, scale = get_stamp_rect(
+        page.rect,
+        stamp_width,
+        stamp_height,
+        placement or DEFAULT_STAMP_SETTINGS["received_stamp"],
     )
 
     # Insert stamp artwork
@@ -97,16 +118,16 @@ def apply_received_stamp(doc, received_date):
 
     # Date area inside the stamp
     date_rect = pymupdf.Rect(
-        x + stamp_width * 0.27,
-        y + stamp_height * 0.38,
-        x + stamp_width * 0.73,
-        y + stamp_height * 0.68
+        stamp_rect.x0 + stamp_rect.width * 0.27,
+        stamp_rect.y0 + stamp_rect.height * 0.38,
+        stamp_rect.x0 + stamp_rect.width * 0.73,
+        stamp_rect.y0 + stamp_rect.height * 0.68
     )
 
     # Format date
     date_text = received_date.strftime("%b %d %Y").upper()
 
-    fontsize = 10
+    fontsize = 10 * scale / 100
 
     text_width = pymupdf.get_text_length(
         date_text,
@@ -132,7 +153,10 @@ def apply_received_stamp(doc, received_date):
 
     return doc
 
-def stamp_documents(folder, start_number, received_date):
+def stamp_documents(
+    folder, start_number, received_date, stamp_settings=None
+):
+    stamp_settings = stamp_settings or DEFAULT_STAMP_SETTINGS
     OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
     pdf_files = get_pdf_files(folder)
 
@@ -159,8 +183,17 @@ def stamp_documents(folder, start_number, received_date):
         temp_path = OUTPUT_FOLDER / f".{number:03d}_temp.pdf"
 
         try:
-            doc = apply_document_number(pdf_path, number, received_date)
-            doc = apply_received_stamp(doc, received_date)
+            doc = apply_document_number(
+                pdf_path,
+                number,
+                received_date,
+                stamp_settings.get("document_number"),
+            )
+            doc = apply_received_stamp(
+                doc,
+                received_date,
+                stamp_settings.get("received_stamp"),
+            )
 
             doc.save(temp_path)
             doc.close()
