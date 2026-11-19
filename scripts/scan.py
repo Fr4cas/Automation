@@ -60,7 +60,7 @@ def improve_subject(page, texts, boxes):
     bottom = int(np.min(boxes[explanation_index][:, 1])) - 10
 
     clip = pymupdf.Rect(0, top, page.rect.width, bottom)
-    crop_pix = page.get_pixmap(clip=clip, dpi=200)
+    crop_pix = page.get_pixmap(clip=clip, dpi=300)
     crop_image = crop_pix.pil_image()
 
     start = time.perf_counter()
