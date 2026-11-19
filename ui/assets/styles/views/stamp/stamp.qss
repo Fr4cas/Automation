@@ -1,0 +1,170 @@
+
+/* Cards */
+QWidget#stampPage QFrame#stampCard {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+}
+
+/* Section Titles */
+QWidget#stampPage QLabel#panelTitle {
+    color: #172033;
+    font-size: 15px;
+    font-weight: 600;
+    padding-bottom: 4px;
+}
+
+/* Input Fields */
+QWidget#stampPage QSpinBox,
+QWidget#stampPage QDateEdit {
+    background-color: #FFFFFF;
+    color: #334155;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    padding: 6px 9px;
+    min-height: 20px;
+}
+
+QWidget#stampPage QSpinBox:hover,
+QWidget#stampPage QDateEdit:hover {
+    border-color: #93B4EA;
+}
+
+QWidget#stampPage QSpinBox:focus,
+QWidget#stampPage QDateEdit:focus {
+    border: 1px solid #3B82F6;
+}
+
+/* Input Dropdown Buttons */
+
+QWidget#stampPage QSpinBox::up-button,
+QWidget#stampPage QSpinBox::down-button,
+QWidget#stampPage QDateEdit::drop-down {
+    background-color: #F1F5F9;
+    border: none;
+    width: 22px;
+}
+
+/* Change Position Buttons */
+QWidget#stampPage QPushButton#numberChangeButton,
+QWidget#stampPage QPushButton#receivedChangeButton {
+    background-color: #FFFFFF;
+    color: #2563EB;
+    border: 1px solid #B8C9E8;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-weight: 600;
+}
+
+QWidget#stampPage QPushButton#numberChangeButton:hover,
+QWidget#stampPage QPushButton#receivedChangeButton:hover {
+    background-color: #EFF6FF;
+    border-color: #3B82F6;
+}
+
+/* Primary Button */
+QWidget#stampPage QPushButton#primaryButton {
+    background-color: #2563EB;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-weight: 600;
+}
+
+QWidget#stampPage QPushButton#primaryButton:hover {
+    background-color: #1D4ED8;
+}
+
+QWidget#stampPage QPushButton#primaryButton:pressed {
+    background-color: #1E40AF;
+}
+
+/* Position Preview */
+QWidget#stampPage QLabel#positionPreview {
+    background-color: #F8FAFC;
+    color: #475569;
+    border: 1px dashed #CBD5E1;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 13px;
+}
+
+/* Processing Status */
+QWidget#stampPage QLabel#statusLabel {
+    background-color: #E8F0FF;
+    color: #2563EB;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+
+/* =====================================
+   DOCUMENT POSITION PREVIEW
+===================================== */
+
+QWidget#stampPage QFrame#previewPaper {
+    background-color: #FFFFFF;
+    border: 1px solid #D8E0EA;
+    border-radius: 3px;
+}
+
+/* Document Number */
+
+QWidget#stampPage QLabel#previewNumber {
+    background-color: #EAF1FF;
+    color: #2563EB;
+    border: 1px solid #C7D9FF;
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+/* Simulated Document Text */
+
+QWidget#stampPage QFrame#previewLine {
+    background-color: #DCE3EC;
+    border: none;
+    border-radius: 1px;
+}
+
+/* Received Stamp */
+
+QWidget#stampPage QLabel#previewReceived {
+    background-color: #FFFFFF;
+    color: #DC2626;
+    border: 1px solid #EF4444;
+    border-radius: 3px;
+    padding: 3px 5px;
+    font-size: 7px;
+    font-weight: 600;
+}
+
+/* Section Descriptions */
+
+QWidget#stampPage QLabel#sectionDescription {
+    color: #64748B;
+    font-size: 11px;
+}
+
+/* Position Labels */
+
+QWidget#stampPage QLabel#positionName {
+    color: #1E293B;
+    font-weight: 600;
+}
+
+QWidget#stampPage QLabel#positionDescription {
+    color: #94A3B8;
+    font-size: 10px;
+}
+
+QWidget#stampPage QLabel#positionValue {
+    background-color: #EAF1FF;
+    color: #2563EB;
+    border-radius: 10px;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 600;
+}

@@ -3,4 +3,5 @@
 /* @include widgets/sidebar.qss */
 /* @include views/overview.qss */
 /* @include views/stamped.qss */
+/* @include views/stamp/stamp.qss */
 /* @include views/documents/tabs/metadata_tab.qss */
