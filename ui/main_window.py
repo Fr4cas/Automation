@@ -40,9 +40,12 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1000, 650)
 
         central_widget = QWidget()
+        central_widget.setObjectName("appRoot")
         self.setCentralWidget(central_widget)
 
         main_layout = QHBoxLayout(central_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
 
         # Sidebar
         self.sidebar = Sidebar()
@@ -50,13 +53,15 @@ class MainWindow(QMainWindow):
 
         # Main content
         content_widget = QWidget()
+        content_widget.setObjectName("contentWidget")
         layout = QVBoxLayout(content_widget)
 
         layout.setSpacing(16)
-        layout.setContentsMargins(24, 24, 24, 24)
+        layout.setContentsMargins(12, 24, 12, 24)
 
         # View container
         self.view_stack = QStackedWidget()
+        self.view_stack.setObjectName("viewStack")
         layout.addWidget(self.view_stack)
 
         # Overview

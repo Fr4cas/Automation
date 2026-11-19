@@ -1,3 +1,28 @@
+QMainWindow {
+    background-color: #F8FAFD;
+}
+
+QWidget#appRoot {
+    background-color: #F8FAFD;
+}
+
+QWidget#contentWidget {
+    background: qlineargradient(
+        x1: 0, y1: 0,
+        x2: 1, y2: 1,
+        stop: 0 #FFFFFF,
+        stop: 1 #F3F7FC
+    );
+
+    border: none;
+    border-radius: 0px;
+}
+
+QStackedWidget#viewStack {
+    background: transparent;
+    border: none;
+}
+
 * {
     font-family: "Segoe UI";
     font-size: 10pt;
