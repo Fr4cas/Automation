@@ -1,6 +1,3 @@
-import sys
-import os
-
 from ui.widgets.sidebar import Sidebar
 from ui.views.overview_view import OverviewView
 from ui.views.analytics_view import AnalyticsView
@@ -10,9 +7,9 @@ from ui.views.documents.documents_view import DocumentsView
 from ui.views.settings_view import SettingsView
 from ui.views.stamp_view import StampView
 
+from controllers.scan_controller import ScanController
 from controllers.stamp_controller import (StampController, StampedController)
 
-from PySide6.QtCore import QProcess
 from PySide6.QtWidgets import (
     QMainWindow, QVBoxLayout, QHBoxLayout,
     QWidget, QStackedWidget,
@@ -21,19 +18,6 @@ from PySide6.QtWidgets import (
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        # Processing
-        self.process = QProcess(self)
-
-        self.project_dir = os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__))
-        )
-
-        self.scan_script = os.path.join(
-            self.project_dir,
-            "scripts",
-            "scan.py"
-        )
 
         self.setWindowTitle("Document Processor")
         self.resize(1100, 750)
@@ -93,6 +77,11 @@ class MainWindow(QMainWindow):
         self.view_stack.addWidget(self.settings_view)
 
         # Controllers
+        self.scan_controller = ScanController(
+            self.overview_view,
+            self.settings_view
+        )
+
         self.stamp_controller = StampController(
             self.stamp_view,
             self.settings_view
@@ -124,26 +113,17 @@ class MainWindow(QMainWindow):
             )
 
         self.overview_view.start_button.clicked.connect(
-            self.start_processing
+            self.scan_controller.start_processing
         )
+        self.overview_view.open_folder_requested.connect(
+            self.scan_controller.open_scan_folder
+        )
+
+        self.view_stack.currentChanged.connect(self.on_view_changed)
+        self.scan_controller.refresh_scan_folder()
 
         main_layout.addWidget(content_widget)
 
-    def start_processing(self):
-        input_folder = self.settings_view.get_scan_folder()
-
-        if not input_folder or not os.path.isdir(input_folder):
-            return
-
-        output_folder = os.path.join(
-            self.project_dir,
-            "output",
-            "extracted_text"
-        )
-
-        self.process.setWorkingDirectory(self.project_dir)
-
-        self.process.start(
-            sys.executable,
-            [self.scan_script, input_folder, output_folder]
-        )
+    def on_view_changed(self, index):
+        if self.view_stack.widget(index) is self.overview_view:
+            self.scan_controller.refresh_scan_folder()
